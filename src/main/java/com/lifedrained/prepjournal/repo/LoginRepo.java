@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@Table(name = "USERS")
+@Table(name = "USERS", schema = "APP")
 public interface LoginRepo extends JpaRepository<LoginEntity, Long> {
       @NonNull
      LoginEntity save(LoginEntity entity);
@@ -19,4 +19,6 @@ public interface LoginRepo extends JpaRepository<LoginEntity, Long> {
     Optional<LoginEntity> findByLogin(String login);
     @Override
     List<LoginEntity> findAll();
+
+
 }

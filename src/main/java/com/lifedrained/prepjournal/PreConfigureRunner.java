@@ -26,7 +26,7 @@ public class PreConfigureRunner implements CommandLineRunner {
 
         }else {
             System.out.println("no root found, creating a new one");
-            LoginEntity root =  new LoginEntity("root","admin137dark3","ADMIN");
+            LoginEntity root =  new LoginEntity("root","admin137dark3","ADMIN","Корень");
             service.updateUser(root);
         }
     }

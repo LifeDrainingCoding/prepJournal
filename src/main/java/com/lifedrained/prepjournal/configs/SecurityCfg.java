@@ -32,13 +32,14 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static com.lifedrained.prepjournal.consts.RoleConsts.*;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 @AllArgsConstructor
-public class SecurityCfg implements AuthenticationSuccessHandler, AuthenticationFailureHandler {
-    public static final String ADMIN = "ADMIN", ADMIN1 = "ROLE_ADMIN", USER = "USER",
-    USER1 = "ROLE_USER";
+public class SecurityCfg implements AuthenticationSuccessHandler {
+
     LoginService loginService;
     @Bean
     public AuthenticationProvider provider(){
@@ -69,16 +70,11 @@ public class SecurityCfg implements AuthenticationSuccessHandler, Authentication
             @Override
             public void customize(FormLoginConfigurer<HttpSecurity> formCfg) {
                 formCfg.successHandler(SecurityCfg.this);
-                formCfg.failureHandler(SecurityCfg.this);
             }
         }).build();
     }
 
-    @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        System.out.println( exception.getLocalizedMessage());
 
-    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -89,9 +85,9 @@ public class SecurityCfg implements AuthenticationSuccessHandler, Authentication
                return grantedAuthority.getAuthority();
            }
        }).findFirst().orElse("");
-       if (role.equals(ADMIN)||role.equals(ADMIN1)){
+       if (role.equals(ADMIN.value)||role.equals(ADMIN1.value)){
            response.sendRedirect("/admin");
-       } else if (role.equals(USER)||role.equals(USER1)) {
+       } else if (role.equals(USER.value)||role.equals(USER1.value)) {
            response.sendRedirect("/user");
        }else {
            response.sendError(404, "No suitable page found for role: "+role);

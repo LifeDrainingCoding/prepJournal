@@ -1,5 +1,6 @@
 package com.lifedrained.prepjournal.repo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table( name="USERS")
+@Table( name="USERS", schema = "APP")
 public class LoginEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
