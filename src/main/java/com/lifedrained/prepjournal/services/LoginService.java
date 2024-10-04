@@ -1,16 +1,12 @@
 package com.lifedrained.prepjournal.services;
 
 import com.lifedrained.prepjournal.configs.LoginDetails;
-import com.lifedrained.prepjournal.repo.LoginEntity;
+import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.repo.LoginRepo;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -57,7 +53,7 @@ public class LoginService implements UserDetailsService {
         repo.save(entity);
     }
     public Optional<LoginEntity> findById(long id){
-        return repo.findById(id);
+        return repo.findByIdOrderById(id);
     }
     public Optional<LoginEntity> findByLogin(String login){
         return repo.findByLogin(login);

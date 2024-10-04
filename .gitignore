@@ -6,7 +6,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 prodDB
-src/main/frontend
+src/main/frontend/
 
 ### STS ###
 .apt_generated

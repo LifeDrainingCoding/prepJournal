@@ -1,6 +1,6 @@
 package com.lifedrained.prepjournal;
 
-import com.lifedrained.prepjournal.repo.LoginEntity;
+import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.services.LoginService;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

@@ -54,6 +54,9 @@ dependencies {
     implementation 'com.vaadin:flow-polymer-template:23.1.12'
 // https://mvnrepository.com/artifact/org.webjars.bowergithub.polymer/polymer
     implementation 'org.webjars.bowergithub.polymer:polymer:2.8.0'
+    // https://mvnrepository.com/artifact/org.apache.derby/derby
+    implementation 'org.apache.derby:derby:10.17.1.0'
+
 
     implementation 'org.springframework.integration:spring-integration-mail'
     // https://mvnrepository.com/artifact/org.springframework.security/spring-security-core
@@ -67,8 +70,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-    runtimeOnly 'org.apache.derby:derby'
-    runtimeOnly 'org.apache.derby:derbytools'
+    // https://mvnrepository.com/artifact/org.apache.derby/derbytools
+    implementation 'org.apache.derby:derbytools:10.17.1.0'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
@@ -79,6 +82,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.shell:spring-shell-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 }
 
 dependencyManagement {

@@ -3,7 +3,7 @@ package com.lifedrained.prepjournal.front.views;
 import com.lifedrained.prepjournal.front.lists.UserVirtualList;
 import com.lifedrained.prepjournal.front.interfaces.OnCheckBoxPickedListener;
 import com.lifedrained.prepjournal.front.lists.renders.UsersRender;
-import com.lifedrained.prepjournal.repo.LoginEntity;
+import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.repo.LoginRepo;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.html.H1;
@@ -21,7 +21,7 @@ public class TabSheetView extends TabSheet {
         super();
         setWidthFull();
 
-        Tab tab2 = new Tab("Вкладка 2");
+        Tab tab2 = new Tab("Список занятий");
         tab2.setId("tab2");
         VerticalLayout content2 = new VerticalLayout();
         content2.add(new H1("Содержимое вкладки 2"));

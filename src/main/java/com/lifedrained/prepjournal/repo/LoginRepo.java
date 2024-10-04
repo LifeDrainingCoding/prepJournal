@@ -1,5 +1,6 @@
 package com.lifedrained.prepjournal.repo;
 
+import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import jakarta.persistence.Table;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,8 +15,7 @@ public interface LoginRepo extends JpaRepository<LoginEntity, Long> {
       @NonNull
      LoginEntity save(LoginEntity entity);
 
-    @Override
-    Optional<LoginEntity> findById(Long aLong);
+    Optional<LoginEntity> findByIdOrderById(Long aLong);
     Optional<LoginEntity> findByLogin(String login);
     @Override
     List<LoginEntity> findAll();

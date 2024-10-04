@@ -1,7 +1,7 @@
 package com.lifedrained.prepjournal.front.lists;
 
 import com.lifedrained.prepjournal.front.lists.renders.UsersRender;
-import com.lifedrained.prepjournal.repo.LoginEntity;
+import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 
 import java.util.List;

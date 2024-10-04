@@ -4,7 +4,7 @@ import com.lifedrained.prepjournal.Utils.KeyGen;
 import com.lifedrained.prepjournal.Utils.NameProcessor;
 import com.lifedrained.prepjournal.front.interfaces.OnCheckBoxPickedListener;
 import com.lifedrained.prepjournal.front.views.widgets.CustomLabel;
-import com.lifedrained.prepjournal.repo.LoginEntity;
+import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -27,8 +27,8 @@ public class UsersRender extends ComponentRenderer<Component, LoginEntity> {
 
 
                 id  = new CustomLabel(String.valueOf(entity.getId()));
-                id.setMaxWidth(40, Unit.PIXELS);
-                id.setWidth(40,Unit.PIXELS);
+                id.setMaxWidth(80, Unit.PIXELS);
+                id.setWidth(80,Unit.PIXELS);
 
                 name = new CustomLabel(entity.getName());
 
@@ -65,6 +65,7 @@ public class UsersRender extends ComponentRenderer<Component, LoginEntity> {
                 }else {
                     layout.add(id,name,login,password,role);
                 }
+                layout.addClassNames(Border.BOTTOM,Border.TOP, BorderColor.CONTRAST_20);
 
 
 

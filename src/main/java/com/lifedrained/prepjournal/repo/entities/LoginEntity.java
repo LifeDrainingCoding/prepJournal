@@ -1,6 +1,5 @@
-package com.lifedrained.prepjournal.repo;
+package com.lifedrained.prepjournal.repo.entities;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,14 +15,14 @@ import org.springframework.lang.Nullable;
 @Table( name="USERS", schema = "APP")
 public class LoginEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY )
+    @Column(name = "ID", nullable = false)
     private Long id;
 
-    @Column (name ="login")
+    @Column (name ="login" , nullable = false)
     private String login;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "ROLES")
@@ -45,4 +44,5 @@ public class LoginEntity {
         this.role = role;
         this.name = name;
     }
+
 }

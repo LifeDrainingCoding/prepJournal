@@ -6,14 +6,16 @@ import com.lifedrained.prepjournal.front.interfaces.UserControl;
 import com.lifedrained.prepjournal.front.views.ChangeUserDialog;
 import com.lifedrained.prepjournal.front.views.TabSheetView;
 import com.lifedrained.prepjournal.front.views.UsersControlButtons;
-import com.lifedrained.prepjournal.repo.LoginEntity;
+import com.lifedrained.prepjournal.front.views.widgets.UserLabel;
+import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.repo.LoginRepo;
+import com.lifedrained.prepjournal.services.ServiceUtils;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Duration;
 import java.util.Iterator;
@@ -28,12 +30,14 @@ public class AdminControlPanel extends VerticalLayout implements ComponentEventL
     private LinkedHashMap<String, LoginEntity> selectedLogins;
     private UsersControlButtons bar;
 
-   public AdminControlPanel(LoginRepo loginRepo) {
+   public AdminControlPanel(LoginRepo loginRepo, ServiceUtils utils) {
+       super();
        this.loginRepo = loginRepo;
        selectedLogins = new LinkedHashMap<>();
        bar = new UsersControlButtons(this);
        TabSheetView view = new TabSheetView(loginRepo, this, this);
        setAlignItems(Alignment.CENTER);
+       view.setSuffixComponent(new UserLabel(loginRepo, utils));
        add(view);
    }
 

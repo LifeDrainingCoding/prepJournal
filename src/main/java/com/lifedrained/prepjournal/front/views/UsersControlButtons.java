@@ -2,12 +2,13 @@ package com.lifedrained.prepjournal.front.views;
 
 import com.lifedrained.prepjournal.front.interfaces.UserControl;
 import com.lifedrained.prepjournal.front.views.widgets.CustomButton;
-import com.lifedrained.prepjournal.repo.LoginEntity;
+import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import lombok.Getter;
 
 import java.util.LinkedHashMap;
@@ -19,6 +20,8 @@ public class UsersControlButtons extends HorizontalLayout {
         super();
 
         setWidthFull();
+
+        addClassNames(BorderColor.CONTRAST_20,Border.BOTTOM);
 
         setAlignItems(Alignment.CENTER);
 

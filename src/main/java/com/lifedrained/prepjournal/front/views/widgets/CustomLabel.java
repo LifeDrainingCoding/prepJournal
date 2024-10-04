@@ -2,6 +2,7 @@ package com.lifedrained.prepjournal.front.views.widgets;
 
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class CustomLabel extends TextArea {
