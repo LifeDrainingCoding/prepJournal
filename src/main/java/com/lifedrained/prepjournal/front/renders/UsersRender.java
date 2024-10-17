@@ -1,8 +1,9 @@
-package com.lifedrained.prepjournal.front.lists.renders;
+package com.lifedrained.prepjournal.front.renders;
 
 import com.lifedrained.prepjournal.Utils.KeyGen;
 import com.lifedrained.prepjournal.Utils.NameProcessor;
-import com.lifedrained.prepjournal.front.interfaces.OnCheckBoxPickedListener;
+import com.lifedrained.prepjournal.consts.Ids;
+import com.lifedrained.prepjournal.front.interfaces.OnCheckedListener;
 import com.lifedrained.prepjournal.front.views.widgets.CustomLabel;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.vaadin.flow.component.*;
@@ -17,7 +18,7 @@ import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 
 public class UsersRender extends ComponentRenderer<Component, LoginEntity> {
-    public UsersRender(OnCheckBoxPickedListener listener) {
+    public UsersRender(OnCheckedListener listener) {
         super(new SerializableFunction<LoginEntity, Component>() {
             @Override
             public Component apply(LoginEntity entity) {
@@ -57,7 +58,7 @@ public class UsersRender extends ComponentRenderer<Component, LoginEntity> {
                     selected.addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<Checkbox, Boolean>>() {
                         @Override
                         public void valueChanged(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event) {
-                            listener.onChecked(String.valueOf(selected.getId()),entity, event.getValue());
+                            listener.onChecked(String.valueOf(selected.getId()),entity, event.getValue(), Ids.ACCOUNT_BAR);
                         }
                     });
                     selected.addClassNames(AlignSelf.CENTER, AlignContent.CENTER);

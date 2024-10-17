@@ -12,7 +12,7 @@ public class MasterSchedulePage extends VerticalLayout implements HasUrlParamete
     private LoginRepo repo;
 
     public MasterSchedulePage(LoginRepo repo) {
-
+        this.repo = repo;
     }
 
 

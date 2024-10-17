@@ -1,5 +1,7 @@
 package com.lifedrained.prepjournal.front.interfaces;
 
-public interface OnConfirmDialogListener {
-    void onConfirm(String[]  data);
+import java.util.List;
+
+public interface OnConfirmDialogListener<T> {
+    void onConfirm(T returnData);
 }

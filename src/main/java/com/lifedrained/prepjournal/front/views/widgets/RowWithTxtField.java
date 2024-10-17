@@ -22,4 +22,13 @@ public class RowWithTxtField extends HorizontalLayout {
     public String getFieldText(){
         return textField.getValue();
     }
+
+    public void setLabelWidth(String w){
+        label.setWidth(w);
+        label.setMaxWidth(w);
+    }
+    public void setLabelHeight(String h){
+        label.setHeight(h);
+        label.setMaxHeight(h);
+    }
 }

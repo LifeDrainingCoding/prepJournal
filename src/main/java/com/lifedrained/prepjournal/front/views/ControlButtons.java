@@ -1,7 +1,8 @@
 package com.lifedrained.prepjournal.front.views;
 
-import com.lifedrained.prepjournal.front.interfaces.UserControl;
+import com.lifedrained.prepjournal.front.interfaces.CRUDControl;
 import com.lifedrained.prepjournal.front.views.widgets.CustomButton;
+import com.lifedrained.prepjournal.repo.entities.BaseEntity;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -12,11 +13,12 @@ import com.vaadin.flow.theme.lumo.LumoUtility.*;
 import lombok.Getter;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 @Getter
-public class UsersControlButtons extends HorizontalLayout {
+public class ControlButtons<T extends BaseEntity> extends HorizontalLayout {
     private final CustomButton delete,update,create;
-    public UsersControlButtons(UserControl userControl){
+    public ControlButtons(CRUDControl crudControl, List<String> names){
         super();
 
         setWidthFull();
@@ -25,24 +27,24 @@ public class UsersControlButtons extends HorizontalLayout {
 
         setAlignItems(Alignment.CENTER);
 
-        create = new CustomButton("Добавить аккаунт", new ComponentEventListener<ClickEvent<Button>>() {
+        create = new CustomButton(names.get(0), new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> event) {
-                userControl.onCreate();
+                crudControl.onCreate(getId().get());
             }
         });
 
-        update = new CustomButton("Изменить свойства выбранных аккаунтов", new ComponentEventListener<ClickEvent<Button>>() {
+        update = new CustomButton(names.get(1), new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> event) {
-                userControl.onUpdate();
+                crudControl.onUpdate(getId().get());
             }
         });
 
-        delete = new CustomButton("Удалить выбранных пользователей", new ComponentEventListener<ClickEvent<Button>>() {
+        delete = new CustomButton(names.get(2), new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> event) {
-                userControl.onDelete();
+                crudControl.onDelete(getId().get());
             }
         });
 
@@ -58,7 +60,7 @@ public class UsersControlButtons extends HorizontalLayout {
         update.setEnabled(switcher);
     }
 
-    public void checkButtons (LinkedHashMap<String, LoginEntity> map){
+    public void checkButtons (LinkedHashMap<String, T> map){
         boolean isSelectedEmpty = map.isEmpty();
         if(!isSelectedEmpty){
             toggleButtons(true);

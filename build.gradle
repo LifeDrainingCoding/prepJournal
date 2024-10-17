@@ -32,6 +32,8 @@ ext {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
@@ -56,8 +58,8 @@ dependencies {
     implementation 'org.webjars.bowergithub.polymer:polymer:2.8.0'
     // https://mvnrepository.com/artifact/org.apache.derby/derby
     implementation 'org.apache.derby:derby:10.17.1.0'
-
-
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation 'org.springframework.integration:spring-integration-mail'
     // https://mvnrepository.com/artifact/org.springframework.security/spring-security-core
     implementation 'org.springframework.security:spring-security-core:6.3.3'

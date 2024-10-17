@@ -16,32 +16,43 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.Getter;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Predicate;
 
 @Getter
-public class ChangeUserDialog extends Dialog  {
-    private RowWithTxtField name, login, password;
-    private RowWithComboBox role;
+public class ChangeUserDialog extends BaseDialog<List<String>> {
+    private final RowWithTxtField name, login, password;
+    private final RowWithComboBox role;
 
-    public ChangeUserDialog(OnConfirmDialogListener onConfirmDialogListener,String[] data){
-        super();
-        CustomButton ok, deny;
-        name = new RowWithTxtField(data[0]);
-        login = new RowWithTxtField(data[1]);
-        password = new RowWithTxtField(data[2]);
-        role =  new RowWithComboBox(data[3], Lists.newArrayList(RoleConsts.ADMIN,RoleConsts.USER));
+    public ChangeUserDialog(OnConfirmDialogListener<List<String>> onConfirmDialogListener, List<String> data){
+        super(onConfirmDialogListener);
 
-        ok = new CustomButton("Сохранить", new ComponentEventListener<ClickEvent<Button>>() {
+        name = new RowWithTxtField(data.get(0));
+        login = new RowWithTxtField(data.get(1));
+        password = new RowWithTxtField(data.get(2));
+        role =  new RowWithComboBox(data.get(3), Lists.newArrayList(RoleConsts.ADMIN,RoleConsts.USER));
+
+
+        getHeader().add(new VerticalLayout(name, login, password, role));
+
+    }
+
+    @Override
+    public List<String> getDataFromFields(){
+
+        return List.of(  login.getFieldText(),
+                password.getFieldText(),
+                role.getBoxValue(),
+                name.getFieldText());
+    }
+
+    @Override
+    public void setButtonListeners() {
+        ok.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> event) {
-                if (Arrays.stream(getDataFromFields()).anyMatch(new Predicate<String>() {
-                    @Override
-                    public boolean test(String string) {
-                        return string.isEmpty();
-                    }
-                })){
+                if (isFieldsEmpty()){
                     new Notification("Не все поля заполнены!",
                             (int)Duration.ofSeconds(5).toMillis())
                     {{
@@ -51,29 +62,28 @@ public class ChangeUserDialog extends Dialog  {
                     return;
                 }
                 close();
-                onConfirmDialogListener.onConfirm(getDataFromFields());
+                confirmListener.onConfirm(getDataFromFields());
 
             }
         });
-        deny = new CustomButton("Отмена", new ComponentEventListener<ClickEvent<Button>>() {
+        deny.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> event) {
                 close();
             }
         });
-        deny.setTheme(ButtonVariant.LUMO_ERROR);
-
-
-
-        getHeader().add(new VerticalLayout(name, login, password, role));
-        getFooter().add(deny,ok);
     }
-    public String[] getDataFromFields(){
-        return new String[] {
-                login.getFieldText(),
-                password.getFieldText(),
-                role.getBoxValue(),
-                name.getFieldText()
-        };
+
+    @Override
+    protected boolean isFieldsEmpty() {
+        return getDataFromFields().stream().anyMatch(new Predicate<String>() {
+            @Override
+            public boolean test(String s) {
+                if (s.isEmpty()){
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }

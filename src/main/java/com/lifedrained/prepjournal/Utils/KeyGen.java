@@ -1,14 +1,10 @@
 package com.lifedrained.prepjournal.Utils;
 
-
-
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Objects;
 
 public class KeyGen {
 
@@ -19,6 +15,7 @@ public class KeyGen {
         }
         return keys;
     }
+
     public static String generateKey(){
         KeyGenerator generator = null;
         try {
@@ -29,7 +26,6 @@ public class KeyGen {
         generator.init(256);
         SecretKey secretKey = generator.generateKey();
         String string = Base64.getEncoder().encodeToString(secretKey.getEncoded());
-        System.out.println(string);
         if (string.contains("/")){
           string =  string.replaceAll("/", "!");
         }

@@ -17,10 +17,18 @@ public class CustomButton extends Button {
         currentTheme = ButtonVariant.LUMO_TERTIARY;
         addClassNames(LumoUtility.Margin.Right.MEDIUM);
     }
-
+    public CustomButton(String text){
+        super();
+        setText(text);
+        addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        currentTheme = ButtonVariant.LUMO_TERTIARY;
+        addClassNames(LumoUtility.Margin.Right.MEDIUM);
+    }
     public void setTheme(ButtonVariant theme){
         removeThemeVariants(currentTheme);
         addThemeVariants(theme);
         currentTheme = theme;
     }
+
 }

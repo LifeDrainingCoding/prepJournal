@@ -31,7 +31,7 @@ public class NameProcessor {
         return new SimpleDateFormat("dd.MM.yyyy").parse(stringDate);
       }catch (ParseException ex){
          log.error("Error during parsing date  ", ex);
+         return new Date();
       }
-      return null;
    }
 }
