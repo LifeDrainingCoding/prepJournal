@@ -3,8 +3,6 @@ package com.lifedrained.prepjournal.front.views.widgets;
 import com.lifedrained.prepjournal.front.interfaces.OnCheckedListener;
 import com.lifedrained.prepjournal.front.renders.CheckBoxColumnRender;
 import com.lifedrained.prepjournal.front.renders.PropertyRender;
-import com.lifedrained.prepjournal.front.renders.ScheduleDateRender;
-import com.lifedrained.prepjournal.front.renders.ScheduleTimeRender;
 import com.lifedrained.prepjournal.repo.entities.BaseEntity;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
@@ -29,6 +27,7 @@ public class CustomGrid<T extends BaseEntity,RENDER extends ComponentRenderer<Co
                 }
             }
         });
+
 
         setRowsDraggable(true);
         addClassName(LumoUtility.Flex.AUTO);

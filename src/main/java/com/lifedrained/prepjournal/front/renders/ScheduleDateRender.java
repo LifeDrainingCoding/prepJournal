@@ -1,6 +1,6 @@
 package com.lifedrained.prepjournal.front.renders;
 
-import com.lifedrained.prepjournal.Utils.TimeUtils;
+import com.lifedrained.prepjournal.Utils.DateUtils;
 import com.lifedrained.prepjournal.repo.entities.BaseEntity;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 import com.vaadin.flow.component.Component;
@@ -13,7 +13,7 @@ public class ScheduleDateRender<T extends BaseEntity> extends ComponentRenderer<
         super(new SerializableFunction<T, Component>() {
             @Override
             public Component apply(T t) {
-                return new Text(TimeUtils.convertToString(((ScheduleEntity)t).getScheduleTime()));
+                return new Text(DateUtils.getStringFromDate(((ScheduleEntity)t).getDate()));
             }
         });
     }

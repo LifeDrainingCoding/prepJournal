@@ -1,21 +1,30 @@
 package com.lifedrained.prepjournal.front.views;
 
-import com.lifedrained.prepjournal.Utils.NameProcessor;
+import com.lifedrained.prepjournal.Utils.Notify;
+import com.lifedrained.prepjournal.Utils.OnCheckedEntityHandler;
+import com.lifedrained.prepjournal.Utils.ProcessorBarEvent;
+import com.lifedrained.prepjournal.consts.Routes;
+import com.lifedrained.prepjournal.events.EventType;
 import com.lifedrained.prepjournal.consts.Ids;
 
 import com.lifedrained.prepjournal.consts.RenderLists;
 import com.lifedrained.prepjournal.consts.StringConsts;
 import com.lifedrained.prepjournal.front.interfaces.CRUDControl;
-import com.lifedrained.prepjournal.front.interfaces.OnConfirmDialogListener;
 import com.lifedrained.prepjournal.front.interfaces.OnSearchEventListener;
 import com.lifedrained.prepjournal.front.interfaces.OnCheckedListener;
 import com.lifedrained.prepjournal.front.views.widgets.CustomGrid;
+import com.lifedrained.prepjournal.repo.GroupsRepo;
+import com.lifedrained.prepjournal.repo.entities.BaseEntity;
+import com.lifedrained.prepjournal.repo.entities.GlobalVisitor;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.repo.LoginRepo;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
+import com.lifedrained.prepjournal.services.GlobalVisitorService;
 import com.lifedrained.prepjournal.services.SchedulesService;
+import com.lifedrained.prepjournal.services.ServiceUtils;
+import com.lifedrained.prepjournal.services.VisitorsService;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -24,10 +33,11 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabSheet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.units.qual.K;
 
-import java.text.ParseException;
 import java.time.Duration;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -40,30 +50,59 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
     private static final Logger log = LogManager.getLogger(AdminTabSheetView.class);
     private final ControlButtons<LoginEntity> accountBar;
     private final ControlButtons<ScheduleEntity> schedulesBar;
-    private final SchedulesService schedulesService;
-    private final VerticalLayout usersContent;
-    private final VerticalLayout schedulesContent;
+    private final ControlButtons<GlobalVisitor> visitorBar;
+
+    private VerticalLayout usersContent, schedulesContent, visitorsContent;
+    private CustomGrid<ScheduleEntity,?> schedulesGrid;
+
     private final LinkedHashMap<String, LoginEntity> selectedLogins;
     private final LinkedHashMap<String, ScheduleEntity> selectedSchedules;
+    private final LinkedHashMap<String,GlobalVisitor> selectedVisitors;
+
+    private final SchedulesService schedulesService;
     private final LoginRepo repo;
-    private final CustomGrid<ScheduleEntity,?> schedulesGrid;
+    private final GroupsRepo groupsRepo;
+    private final VisitorsService visitorsService;
+    private final GlobalVisitorService globalVisitorService;
+    private final List<Object> eventServices;
+    private final List<HashMap<String,? extends BaseEntity>> maps;
+    private final ServiceUtils utils;
 
-
-    public AdminTabSheetView(LoginRepo repo, SchedulesService service){
+    public AdminTabSheetView(LoginRepo repo, SchedulesService service,
+                             GroupsRepo groupsRepo,
+                             VisitorsService visitorsService,
+                             GlobalVisitorService globalVisitorService, ServiceUtils utils){
         super();
-        setWidthFull();
+        this.utils = utils;
         schedulesService = service;
         this.repo = repo;
-
+        this.groupsRepo = groupsRepo;
+        this.visitorsService = visitorsService;
+        this.globalVisitorService = globalVisitorService;
+        eventServices = List.of(repo,schedulesService,globalVisitorService,groupsRepo);
+        setWidthFull();
         schedulesBar = new ControlButtons<>(this, StringConsts.SchedulesCRUDNames){{
             setId(Ids.SCHEDULES_BAR);
         }};
         accountBar = new ControlButtons<>(this, StringConsts.AccCRUDNames){{
             setId(Ids.ACCOUNT_BAR);
         }};
+        visitorBar = new ControlButtons<>(this,StringConsts.VisitorCRUDNames){{
+            setId(Ids.VISITORS_BAR);
+        }};
 
         selectedLogins = new LinkedHashMap<>();
         selectedSchedules = new LinkedHashMap<>();
+        selectedVisitors = new LinkedHashMap<>();
+        maps = new ArrayList<>();
+        maps.add(selectedLogins);
+        maps.add(selectedSchedules);
+        maps.add(selectedVisitors);
+
+        initTabs();
+
+    }
+    private void initTabs(){
 
         Tab schedulesTab = new Tab("Список занятий");
         schedulesContent = new VerticalLayout();
@@ -75,17 +114,20 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
                 RenderLists.SCHEDULES_RENDERS, new OnCheckedListener<ScheduleEntity>() {
             @Override
             public void onChecked(String id, ScheduleEntity entity, boolean isChecked, String viewId) {
-                if(isChecked){
-                    selectedSchedules.put(id,entity);
-                }else {
-                    selectedSchedules.remove(id);
-                }
-                schedulesBar.checkButtons(selectedSchedules);
+                new OnCheckedEntityHandler<ScheduleEntity>(id, entity, isChecked,selectedSchedules, schedulesBar);
             }
         }, Ids.SCHEDULES_BAR);
-        List<ScheduleEntity> scheduleEntities = service.getRepo().findAll();
+        List<ScheduleEntity> scheduleEntities = schedulesService.getRepo().findAll();
         schedulesGrid.setItems(scheduleEntities);
         schedulesContent.add(schedulesGrid);
+        schedulesGrid.addItemDoubleClickListener(new ComponentEventListener<ItemDoubleClickEvent<ScheduleEntity>>() {
+            @Override
+            public void onComponentEvent(ItemDoubleClickEvent<ScheduleEntity> event) {
+                utils.openNewTab(Routes.SCHEDULE_DETAILS+"/"+event.getItem().getUid());
+                Notify.info("Здесь должна открываться страница с UID: "+event.getItem().getUid());
+            }
+        });
+        schedulesContent.addComponentAtIndex(1,schedulesBar);
         add(schedulesTab, schedulesContent);
 
         Tab usersTab = new Tab("Управление пользователями");
@@ -99,19 +141,27 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
                 new OnCheckedListener<LoginEntity>() {
                     @Override
                     public void onChecked(String id, LoginEntity entity, boolean isChecked, String viewId) {
-                        if(isChecked){
-                            selectedLogins.put(id,entity);
-                        }else {
-                            selectedLogins.remove(id);
-                        }
-                        accountBar.checkButtons(selectedLogins);
+                        new OnCheckedEntityHandler<LoginEntity>(id,entity,isChecked,selectedLogins, accountBar);
                     }
                 }, Ids.ACCOUNT_BAR);
         entitiesGrid.setItems(entities);
         usersContent.add(entitiesGrid);
         add(usersTab,usersContent);
 
-
+        Tab visitorTab = new Tab("Управление посетителями");
+        visitorsContent = new VerticalLayout(new H1("Список посетителей"));
+        CustomGrid<GlobalVisitor,?>  visitorGrid =  new CustomGrid<>(GlobalVisitor.class,
+                RenderLists.GLOBAL_VISITORS_RENDER, new OnCheckedListener<GlobalVisitor>() {
+            @Override
+            public void onChecked(String id, GlobalVisitor entity, boolean isChecked, String viewId) {
+                new OnCheckedEntityHandler<GlobalVisitor>(id,entity,isChecked,selectedVisitors,visitorBar);
+            }
+        },Ids.VISITORS_BAR);
+        visitorTab.setId(VISITORS_CONTENT);
+        List<GlobalVisitor> globalVisitors = globalVisitorService.getRepo().findAll();
+        visitorGrid.setItems(globalVisitors);
+        visitorsContent.add(visitorGrid);
+        add(visitorTab,visitorsContent );
         addSelectedChangeListener(this);
     }
 
@@ -119,6 +169,7 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
     public void onSearchEvent(List<ScheduleEntity> entities) {
         schedulesGrid.setItems(entities);
     }
+
 
     @Override
     public void onComponentEvent(AdminTabSheetView.SelectedChangeEvent event) {
@@ -128,15 +179,23 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
 
                 if(string.equals(USERS_CONTENT)){
                     usersContent.addComponentAtIndex(1, accountBar);
-                }else {
+                }else{
                     selectedLogins.clear();
                     usersContent.remove(accountBar);
                 }
+
                 if (string.equals(SCHEDULES_CONTENT)){
                     schedulesContent.addComponentAtIndex(1,schedulesBar);
-                }else {
+                }else{
                     selectedSchedules.clear();
                     schedulesContent.remove(schedulesBar);
+                }
+
+                if (string.equals(VISITORS_CONTENT)){
+                    visitorsContent.addComponentAtIndex(1, visitorBar);
+                } else {
+                    selectedVisitors.clear();
+                    visitorsContent.remove(visitorBar);
                 }
             }
         }, new Runnable() {
@@ -152,99 +211,24 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
 
     @Override
     public void onDelete(String id) {
-
-        if(selectedLogins.isEmpty()){
-            Notification notification = new Notification("Нельзя удалить ничего. " +
-                    "\n Выберите пользователей для удаления.",
-                    (int) Duration.ofSeconds(10).toMillis(),
-                    Notification.Position.TOP_CENTER);
-            notification.open();
-            return;
-        }
-
-        repo.deleteAll(selectedLogins.values());
-        UI.getCurrent().refreshCurrentRoute(true);
-
-
+       new ProcessorBarEvent(eventServices,List.of(selectedSchedules.values().iterator(),
+               selectedLogins.values().iterator(),
+               selectedVisitors.values().iterator()),maps).processEvent(EventType.DELETE,id);
     }
 
     @Override
     public void onUpdate(String id) {
-        Iterator<?> iterator;
-        final boolean[] switcher = {true};
-        iterator =selectedLogins.values().iterator();
-        while (iterator.hasNext()){
+        new ProcessorBarEvent(eventServices,List.of(selectedSchedules.values().iterator(),
+                selectedLogins.values().iterator(),
+                selectedVisitors.values().iterator()),maps)
+                .processEvent(EventType.UPDATE,id);
 
-            LoginEntity entity = (LoginEntity) iterator.next();
-
-
-            ChangeUserDialog dialog = new ChangeUserDialog(new OnConfirmDialogListener<List<String>>() {
-                @Override
-                public void onConfirm(List<String> data) {
-                    entity.setLogin(data.get(0));
-                    entity.setPassword(data.get(1));
-                    entity.setRole(data.get(2));
-                    entity.setName(data.get(3));
-                    repo.save(entity);
-                    if(switcher[0]){
-                        getUI().ifPresent(new Consumer<UI>() {
-                            @Override
-                            public void accept(UI ui) {
-                                ui.refreshCurrentRoute(true);
-                            }
-                        });
-                        switcher[0] = false;
-                    }
-
-                }
-            }, List.of(entity.getName(), entity.getLogin(),entity.getPassword(), entity.getRole()));
-            dialog.open();
-
-        }
     }
 
     @Override
     public void onCreate(String id) {
-        BaseDialog<List<String>> dialog = null;
-        switch (id){
-            case Ids.ACCOUNT_BAR:
-                 dialog = new ChangeUserDialog(new OnConfirmDialogListener<List<String>>() {
-                    @Override
-                    public void onConfirm(List<String> data) {
-                        LoginEntity entity = new LoginEntity();
-                        entity.setLogin(data.get(0));
-                        entity.setPassword(data.get(1));
-                        entity.setRole(data.get(2));
-                        entity.setName(data.get(3));
-                        repo.save(entity);
-                        UI.getCurrent().refreshCurrentRoute(true);
-                    }
-                }, StringConsts.AccFieldNames);
-
-                 break;
-
-            case Ids.SCHEDULES_BAR:
-                dialog =  new ChangeSchedulesDialog(new OnConfirmDialogListener<List<String>>() {
-                    @Override
-                    public void onConfirm(List<String> data) {
-                        ScheduleEntity entity = new ScheduleEntity();
-                        entity.setScheduleName(data.get(0));
-                        entity.setMasterName(data.get(1));
-                        entity.setDate(NameProcessor.getDateFromString(data.get(2)));
-                        entity.setDuration(Integer.parseInt(data.get(3)));
-                        entity.setScheduleTime(Integer.parseInt(data.get(4)));
-                        entity.setJsonVisitors(data.get(5));
-                        schedulesService.getRepo().save(entity);
-                    }
-                }, StringConsts.SchedulesFieldNames);
-                break;
-            default:
-                log.error("wrong id was placed: {}", id);
-
-        }
-        if(dialog!=null){
-            dialog.open();
-        }
-
+        new ProcessorBarEvent(eventServices, List.of(selectedSchedules.values().iterator(),
+                selectedLogins.values().iterator(),
+                selectedVisitors.values().iterator()),maps).processEvent(EventType.CREATE, id);
     }
 }

@@ -27,7 +27,10 @@ public class KeyGen {
         SecretKey secretKey = generator.generateKey();
         String string = Base64.getEncoder().encodeToString(secretKey.getEncoded());
         if (string.contains("/")){
-          string =  string.replaceAll("/", "!");
+          string = string.replaceAll("/", "");
+        }
+        if (string.contains("=")){
+           string = string.replaceAll("=","");
         }
         return  string;
     }

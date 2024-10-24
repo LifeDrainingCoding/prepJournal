@@ -15,7 +15,6 @@ public class LoginRoleRender<T extends BaseEntity> extends ComponentRenderer<Com
             @Override
             public Component apply(T t) {
                 return new Text(NameProcessor.convertRoleToReadable(((LoginEntity)t).getRole()));
-
             }
         });
     }

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Component
-public class PreConfigureRunner implements CommandLineRunner {
+public class PreConfigurerRunner implements CommandLineRunner {
     private LoginService service;
 
 

@@ -10,6 +10,9 @@ import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Time;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 
@@ -18,7 +21,6 @@ import java.util.Date;
 @Setter
 @Table(schema = "app", name = "schedules")
 @AllArgsConstructor
-@NoArgsConstructor
 public class ScheduleEntity extends BaseEntity  {
     private static final Logger log = LogManager.getLogger(ScheduleEntity.class);
 
@@ -33,29 +35,39 @@ public class ScheduleEntity extends BaseEntity  {
     @Column(name = "MASTER_NAME")
     private String masterName;
 
-    @Column(name ="DATE", nullable = false)
-    private Date date;
-
     @Column(name = "duration_mins", nullable = false)
     private int duration;
 
-    @Column(name = "schedule_begin_time", nullable = false)
-    private int scheduleTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "schedule_begin_time", nullable = false, columnDefinition = "TIMESTAMP")
+    private Date date;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "schedule_theme")
+    private String theme;
+
+    @Column(name = "is_executed")
+    private boolean isExecuted = false;
 
     @Column(name = "visitors")
     private String jsonVisitors;
 
-    @Column(name= "schedule_UID", nullable = false)
+    @Column(name= "schedule_UID", nullable = false, unique = true)
     private String uid;
 
 
-    public ScheduleEntity(String scheduleName, String masterName,Date date ,int durationMins, int scheduleTime){
+
+    public ScheduleEntity(String scheduleName, String masterName,Date date ,int durationMins){
         this.scheduleName = scheduleName;
         this.date = date;
         this.masterName = masterName;
         duration = durationMins;
         uid = KeyGen.generateKey();
-        this.scheduleTime = scheduleTime;
+    }
+    public ScheduleEntity(){
+        uid = KeyGen.generateKey();
     }
 
 }

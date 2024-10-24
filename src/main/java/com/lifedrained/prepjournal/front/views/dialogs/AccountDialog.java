@@ -1,4 +1,4 @@
-package com.lifedrained.prepjournal.front.views;
+package com.lifedrained.prepjournal.front.views.dialogs;
 import com.lifedrained.prepjournal.front.views.widgets.CustomButton;
 import com.lifedrained.prepjournal.front.views.widgets.CustomLabel;
 import com.lifedrained.prepjournal.services.ServiceUtils;
@@ -10,7 +10,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 public class AccountDialog extends Dialog {

@@ -5,8 +5,10 @@ import jakarta.persistence.Table;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Time;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Table(name = "schedules", schema = "app")
@@ -17,7 +19,6 @@ public interface SchedulesRepo extends JpaRepository<ScheduleEntity, Long> {
     List<ScheduleEntity> findAllByMasterNameContains(String s);
     List<ScheduleEntity> findAllByDuration(int duration);
     List<ScheduleEntity> findAllByDurationBetween(int durStart, int durEnd);
-    List<ScheduleEntity> findAllByScheduleTime(int time);
-    List<ScheduleEntity> findAllByScheduleTimeBetween(int timeStart, int timeEnd);
+    Optional<ScheduleEntity> findByUid(String uid);
 
 }

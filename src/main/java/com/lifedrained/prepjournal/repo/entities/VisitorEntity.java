@@ -2,6 +2,7 @@ package com.lifedrained.prepjournal.repo.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serial;
@@ -11,7 +12,8 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "visitors", schema = "app")
-public class ScheduleVisitorEntity extends BaseEntity implements Serializable {
+@NoArgsConstructor
+public class VisitorEntity extends BaseEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,5 +23,10 @@ public class ScheduleVisitorEntity extends BaseEntity implements Serializable {
     private String jsonGlobalEntity;
     @Column(name = "linked_schedule_uid", nullable = false)
     private String scheduleUID;
+
+    public VisitorEntity(String jsonGlobalEntity, String scheduleUID){
+        this.jsonGlobalEntity = jsonGlobalEntity;
+        this.scheduleUID = scheduleUID;
+    }
 
 }

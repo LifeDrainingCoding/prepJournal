@@ -34,7 +34,7 @@ public class LoginEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "UID")
+    @Column(name = "UID", nullable = false)
     private String uid;
 
 

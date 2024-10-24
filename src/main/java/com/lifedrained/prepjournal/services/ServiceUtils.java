@@ -4,6 +4,7 @@ import com.lifedrained.prepjournal.Utils.NameProcessor;
 import com.lifedrained.prepjournal.repo.SchedulesRepo;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.html.Anchor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.compress.utils.Lists;
@@ -20,7 +21,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 @Service
-public class ServiceUtils implements Comparator<Integer> {
+public class ServiceUtils {
     private static final Logger log = LogManager.getLogger(ServiceUtils.class);
     private final HttpServletRequest request;
     private final HttpServletResponse response;
@@ -36,15 +37,12 @@ public class ServiceUtils implements Comparator<Integer> {
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
 
-        // Используем HTTP-редирект для перенаправления на страницу логина
         ui.getUI().ifPresent(ui1 -> {
-            ui1.getPage().setLocation("/login"); // URL для страницы логина
+            ui1.getPage().setLocation("/login");
         });
     }
-
-
-    @Override
-    public int compare(Integer startTime, Integer endTime) {
-        return 0;
+    public void openNewTab(String url){
+        url = "http://localhost:8080"+url;
+        UI.getCurrent().getPage().executeJs("window.open($0, '_blank');", url);
     }
 }

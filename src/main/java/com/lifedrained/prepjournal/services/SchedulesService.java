@@ -6,40 +6,30 @@ import com.lifedrained.prepjournal.Utils.NameProcessor;
 import com.lifedrained.prepjournal.repo.SchedulesRepo;
 import com.lifedrained.prepjournal.repo.entities.GlobalVisitor;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
-import com.lifedrained.prepjournal.repo.entities.ScheduleVisitorEntity;
+import com.lifedrained.prepjournal.repo.entities.VisitorEntity;
+import lombok.Getter;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.lifedrained.prepjournal.Utils.TimeUtils.convertToInt;
-
 @Service
+@Getter
 public class SchedulesService {
     private static final Logger log = LogManager.getLogger(SchedulesService.class);
-    private final SchedulesRepo schedulesRepo;
+    public SchedulesRepo repo;
     public SchedulesService (SchedulesRepo schedulesRepo){
 
-        this.schedulesRepo = schedulesRepo;
+        this.repo = schedulesRepo;
 
     }
 
-    public SchedulesRepo getRepo() {
-        return schedulesRepo;
-    }
 
-    public List<ScheduleEntity> findDatesBetween(String start , String end){
 
-        Date dateStart = NameProcessor.getDateFromString(start);
-        Date dateEnd =  NameProcessor.getDateFromString(end);
-
-        return schedulesRepo.findAllByDateBetween(dateStart ,dateEnd);
-    }
     public List<ScheduleEntity> findTimeBetween(String start, String end){
         String[] partsStart = start.split(":");
         String[] partsEnd = end.split(":");
@@ -55,23 +45,16 @@ public class SchedulesService {
         return null;
 
     }
-    public List<ScheduleEntity> findTimeBetween(String hrsStart , String minsStart, String hrsEnd, String minsEnd){
 
-        int startTime, endTime;
-        startTime = convertToInt(hrsStart,minsStart);
-        endTime = convertToInt(hrsEnd, minsEnd);
-
-        return schedulesRepo.findAllByScheduleTimeBetween(startTime, endTime);
-    }
     public List<ScheduleEntity> findAllByGroups(List<String> groups){
         List<ScheduleEntity> all =getRepo().findAll();
         all.removeIf(new Predicate<ScheduleEntity>() {
             @Override
             public boolean test(ScheduleEntity entity) {
-                List<ScheduleVisitorEntity> visitorEntities = getVisitorsForSchedule(entity);
-                return visitorEntities.stream().noneMatch(new Predicate<ScheduleVisitorEntity>() {
+                List<VisitorEntity> visitorEntities = getVisitorsForSchedule(entity);
+                return visitorEntities.stream().noneMatch(new Predicate<VisitorEntity>() {
                     @Override
-                    public boolean test(ScheduleVisitorEntity visitorEntity) {
+                    public boolean test(VisitorEntity visitorEntity) {
 
                         return groups.stream().anyMatch(new Predicate<String>() {
                             @Override
@@ -87,8 +70,8 @@ public class SchedulesService {
         });
         return all;
     }
-    public List<ScheduleVisitorEntity> getVisitorsForSchedule(ScheduleEntity entity){
-        Type listType = new TypeToken<List<ScheduleVisitorEntity>>(){}.getType();
+    public List<VisitorEntity> getVisitorsForSchedule(ScheduleEntity entity){
+        Type listType = new TypeToken<List<VisitorEntity>>(){}.getType();
         return new Gson().fromJson(entity.getJsonVisitors(),listType);
     }
 }

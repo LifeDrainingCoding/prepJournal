@@ -23,15 +23,5 @@ public class NameProcessor {
 
       throw new IllegalArgumentException("Entered role that doesn't exists: "+role);
    }
-   public static String getStringFromDate (Date date){
-      return new SimpleDateFormat("dd.MM.yyyy").format(date);
-   }
-   public static Date getDateFromString(String stringDate){
-      try {
-        return new SimpleDateFormat("dd.MM.yyyy").parse(stringDate);
-      }catch (ParseException ex){
-         log.error("Error during parsing date  ", ex);
-         return new Date();
-      }
-   }
+
 }

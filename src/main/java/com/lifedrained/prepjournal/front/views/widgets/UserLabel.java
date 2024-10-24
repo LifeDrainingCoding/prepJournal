@@ -1,6 +1,6 @@
 package com.lifedrained.prepjournal.front.views.widgets;
 
-import com.lifedrained.prepjournal.front.views.AccountDialog;
+import com.lifedrained.prepjournal.front.views.dialogs.AccountDialog;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.repo.LoginRepo;
 import com.lifedrained.prepjournal.services.ServiceUtils;

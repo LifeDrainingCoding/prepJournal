@@ -1,37 +1,33 @@
-package com.lifedrained.prepjournal.front.views;
+package com.lifedrained.prepjournal.front.views.dialogs;
 
 import com.google.common.collect.Lists;
 import com.lifedrained.prepjournal.consts.RoleConsts;
 import com.lifedrained.prepjournal.front.interfaces.OnConfirmDialogListener;
-import com.lifedrained.prepjournal.front.views.widgets.CustomButton;
 import com.lifedrained.prepjournal.front.views.widgets.RowWithComboBox;
 import com.lifedrained.prepjournal.front.views.widgets.RowWithTxtField;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.Getter;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
 @Getter
-public class ChangeUserDialog extends BaseDialog<List<String>> {
+public class ChangeUserDialog extends BaseDialog<String> {
     private final RowWithTxtField name, login, password;
     private final RowWithComboBox role;
 
-    public ChangeUserDialog(OnConfirmDialogListener<List<String>> onConfirmDialogListener, List<String> data){
-        super(onConfirmDialogListener);
+    public ChangeUserDialog(OnConfirmDialogListener<String> onConfirmDialogListener, List<String> fieldNames){
+        super(onConfirmDialogListener, fieldNames);
 
-        name = new RowWithTxtField(data.get(0));
-        login = new RowWithTxtField(data.get(1));
-        password = new RowWithTxtField(data.get(2));
-        role =  new RowWithComboBox(data.get(3), Lists.newArrayList(RoleConsts.ADMIN,RoleConsts.USER));
+        name = new RowWithTxtField(fieldNames.get(0));
+        login = new RowWithTxtField(fieldNames.get(1));
+        password = new RowWithTxtField(fieldNames.get(2));
+        role =  new RowWithComboBox(fieldNames.get(3), Lists.newArrayList(RoleConsts.ADMIN,RoleConsts.USER));
 
 
         getHeader().add(new VerticalLayout(name, login, password, role));
@@ -52,13 +48,7 @@ public class ChangeUserDialog extends BaseDialog<List<String>> {
         ok.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> event) {
-                if (isFieldsEmpty()){
-                    new Notification("Не все поля заполнены!",
-                            (int)Duration.ofSeconds(5).toMillis())
-                    {{
-                        open();
-                    }};
-
+                if (isFieldsEmpty(getDataFromFields())){
                     return;
                 }
                 close();
@@ -74,16 +64,4 @@ public class ChangeUserDialog extends BaseDialog<List<String>> {
         });
     }
 
-    @Override
-    protected boolean isFieldsEmpty() {
-        return getDataFromFields().stream().anyMatch(new Predicate<String>() {
-            @Override
-            public boolean test(String s) {
-                if (s.isEmpty()){
-                    return true;
-                }
-                return false;
-            }
-        });
-    }
 }

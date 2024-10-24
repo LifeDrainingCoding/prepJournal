@@ -14,7 +14,11 @@ public class CustomLabel extends TextArea {
 
         getStyle().set("word-wrap", "break-word");
         setMaxWidth(100, Unit.PIXELS);
-        setWidth(100,Unit.PIXELS);
+        super.setWidth(100,Unit.PIXELS);
 
+    }
+    public void setWidth(int width ){
+        super.setWidth(width, Unit.PIXELS);
+        setMaxWidth(width, Unit.PIXELS);
     }
 }
