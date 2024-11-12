@@ -44,6 +44,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    // https://mvnrepository.com/artifact/com.vaadin/vaadin
     implementation 'com.vaadin:vaadin-spring-boot-starter'
     implementation 'org.springframework.integration:spring-integration-amqp'
     implementation 'org.springframework.integration:spring-integration-http'
@@ -57,6 +58,10 @@ dependencies {
 // https://mvnrepository.com/artifact/org.webjars.bowergithub.polymer/polymer
     implementation 'org.webjars.bowergithub.polymer:polymer:2.8.0'
     // https://mvnrepository.com/artifact/org.apache.derby/derby
+    // https://mvnrepository.com/artifact/in.virit/viritin
+    implementation 'in.virit:viritin:2.10.0'
+    // https://mvnrepository.com/artifact/com.opencsv/opencsv
+    implementation 'com.opencsv:opencsv:5.9'
     implementation 'org.apache.derby:derby:10.17.1.0'
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation 'org.apache.commons:commons-lang3:3.17.0'

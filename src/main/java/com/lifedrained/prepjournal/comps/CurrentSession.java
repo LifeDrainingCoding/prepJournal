@@ -1,8 +1,8 @@
-package com.lifedrained.prepjournal;
+package com.lifedrained.prepjournal.comps;
 
-import com.lifedrained.prepjournal.Utils.KeyGen;
 import com.lifedrained.prepjournal.repo.LoginRepo;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
+import com.vaadin.flow.server.VaadinSession;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,5 +35,6 @@ public class CurrentSession {
                 log.error("Cannot create session by login: "+login);
             }
         });
+        VaadinSession.getCurrent().setAttribute(CurrentSession.class, this);
     }
 }

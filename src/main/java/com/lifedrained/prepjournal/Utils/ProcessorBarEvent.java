@@ -1,5 +1,6 @@
 package com.lifedrained.prepjournal.Utils;
 
+import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.events.EventType;
 import com.lifedrained.prepjournal.consts.Ids;
 import com.lifedrained.prepjournal.consts.StringConsts;
@@ -39,7 +40,7 @@ public class ProcessorBarEvent {
         this.maps = maps;
     }
 
-    public void processEvent(EventType type, String barId){
+    public void processEvent(EventType type, String barId, CurrentSession session){
         BaseDialog<String> dialog =null;
         final boolean[] switcher = {true};
         switch (type){
@@ -70,25 +71,32 @@ public class ProcessorBarEvent {
                             schedulesService.getRepo().save(entity);
                             refresh();
                         }
-                    },  StringConsts.SchedulesFieldNames);
+                    },  StringConsts.SchedulesFieldNames,session);
                         scheludesDialog.open();
                     }
                     case Ids.VISITORS_BAR -> {
-                        dialog = new ChangeGlobalVisitorDialog(new OnConfirmDialogListener<String>() {
+
+                       ChangeGlobalVisitorDialog visitorDialog = new ChangeGlobalVisitorDialog(new OnConfirmDialogListener<Object>() {
                             @Override
-                            public void onConfirm(List<String> returnData) {
-                                String group = returnData.get(1);
-                                GlobalVisitor visitor = new GlobalVisitor(returnData.get(0),
-                                        group,
-                                        Integer.parseInt(returnData.get(2)));
+                            public void onConfirm(List<Object> returnData) {
+                                String group = (String) returnData.get(5);
+
+                                GlobalVisitor visitor = new GlobalVisitor((String) returnData.get(0),
+                                        (Date) returnData.get(1),(int)returnData.get(2),
+                                        (String) returnData.get(3), (String) returnData.get(4),
+                                        group,(int) returnData.get(6),
+                                        (String) returnData.get(7));
                                 globalVisitorService.getRepo().save(visitor);
+
                                 if (!groupsRepo.existsByGroup(group)){
-                                    GroupEntity groupEntity = new GroupEntity(group);
+                                    GroupEntity groupEntity = new GroupEntity();
+                                    groupEntity.setGroup(group);
                                     groupsRepo.save(groupEntity);
                                 }
                                 refresh();
                             }
                         }, StringConsts.VisitorFieldNames);
+                       visitorDialog.open();
                     }
                     default ->  log.error("wrong id was passed: {}", barId);
 
@@ -123,23 +131,6 @@ public class ProcessorBarEvent {
                         Iterator<ScheduleEntity> iterator = (Iterator<ScheduleEntity>) iterators.get(0);
                         while (iterator.hasNext()){
                             ScheduleEntity entity = iterator.next();
-                            //todo на случай если нужно будет все группы взять
-//                            Type visitorsType = new TypeToken<List<VisitorEntity>>(){}.getType();
-//                            List<VisitorEntity> visitors = new Gson().fromJson(entity.getJsonVisitors(), visitorsType);
-//                            List<String> groups = new ArrayList<>();
-//                            boolean isFound = false;
-//                            while(!isFound){
-//                                visitors.forEach(new Consumer<VisitorEntity>() {
-//                                    @Override
-//                                    public void accept(VisitorEntity visitorEntity) {
-//                                        if (groups.isEmpty()){
-//                                            Type globalVisitorType = new TypeToken<GlobalVisitor>()
-//                                            GlobalVisitor =
-//                                            groups.add()
-//                                        }
-//                                    }
-//                                });
-//                            }
                             ChangeSchedulesDialog  schedulesDialog = new ChangeSchedulesDialog(new OnConfirmDialogListener<Object>() {
                                 @Override
                                 public void onConfirm(List<Object> returnData) {
@@ -152,9 +143,9 @@ public class ProcessorBarEvent {
                                     switcher[0] = turnOffSwitcher(switcher[0]);
                                 }
                             },List.of(entity.getScheduleName(), entity.getMasterName(),
-                                    DateUtils.getStringFromDate(entity.getDate()),
+                                    DateUtils.getStringFromDateTime(entity.getDate()),
                                     String.valueOf(entity.getDuration()),
-                                  entity.getTheme()));
+                                  entity.getTheme()), session);
                           schedulesDialog.open();
                         }
                     }
@@ -162,17 +153,28 @@ public class ProcessorBarEvent {
                         Iterator<GlobalVisitor> iterator = (Iterator<GlobalVisitor>) iterators.get(2);
                         while (iterator.hasNext()){
                             GlobalVisitor globalVisitor = iterator.next();
-                            dialog =  new ChangeGlobalVisitorDialog(new OnConfirmDialogListener<String>() {
+                            ChangeGlobalVisitorDialog visitorDialog =  new ChangeGlobalVisitorDialog(new OnConfirmDialogListener<Object>() {
                                 @Override
-                                public void onConfirm(List<String> returnData) {
-                                    globalVisitor.setName(returnData.get(0));
-                                    globalVisitor.setGroup(returnData.get(1));
-                                    globalVisitor.setAge(Integer.parseInt(returnData.get(2)));
+                                public void onConfirm(List<Object> returnData) {
+                                    String group = (String) returnData.get(5);
+                                    globalVisitor.setName((String) returnData.get(0));
+                                    globalVisitor.setBirthDate((Date) returnData.get(1));
+                                    globalVisitor.setAge((int) returnData.get(2));
+                                    globalVisitor.setLinkedMasterName((String) returnData.get(3));
+                                    globalVisitor.setSpeciality((String) returnData.get(4));
+                                    globalVisitor.setGroup((group));
+                                    globalVisitor.setVisitedSchedulesYear((int)returnData.get(6));
+                                    globalVisitor.setNotes((String)returnData.get(7));
                                     globalVisitorService.getRepo().save(globalVisitor);
+                                    if (!groupsRepo.existsByGroup(group)){
+                                        GroupEntity groupEntity = new GroupEntity();
+                                        groupEntity.setGroup(group);
+                                        groupsRepo.save(groupEntity);
+                                    }
                                     switcher[0] = turnOffSwitcher(switcher[0]);
                                 }
                             }, StringConsts.VisitorFieldNames);
-                            dialog.open();
+                            visitorDialog.open();
                         }
 
                     }

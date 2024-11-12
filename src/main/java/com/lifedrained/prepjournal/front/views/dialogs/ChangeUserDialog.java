@@ -45,16 +45,13 @@ public class ChangeUserDialog extends BaseDialog<String> {
 
     @Override
     public void setButtonListeners() {
-        ok.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Button> event) {
-                if (isFieldsEmpty(getDataFromFields())){
-                    return;
-                }
-                close();
-                confirmListener.onConfirm(getDataFromFields());
-
+        ok.addClickListener((ComponentEventListener<ClickEvent<Button>>) event -> {
+            if (isFieldsEmpty(getDataFromFields())){
+                return;
             }
+            close();
+            confirmListener.onConfirm(getDataFromFields());
+
         });
         deny.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override

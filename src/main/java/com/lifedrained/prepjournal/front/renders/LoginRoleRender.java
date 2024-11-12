@@ -1,7 +1,6 @@
 package com.lifedrained.prepjournal.front.renders;
 
 import com.lifedrained.prepjournal.Utils.NameProcessor;
-import com.lifedrained.prepjournal.Utils.TimeUtils;
 import com.lifedrained.prepjournal.repo.entities.BaseEntity;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.vaadin.flow.component.Component;

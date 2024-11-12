@@ -41,7 +41,7 @@ public class LoginService implements UserDetailsService {
             }).orElseThrow(new Supplier<Throwable>() {
                 @Override
                 public Throwable get() {
-                    return new UsernameNotFoundException(login+" does not exist in repo");
+                    return new UsernameNotFoundException("Пользователь с логином не найден: " + login );
                 }
             });
         } catch (Throwable e) {

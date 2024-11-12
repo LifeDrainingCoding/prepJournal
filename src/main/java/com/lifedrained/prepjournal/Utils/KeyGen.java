@@ -32,6 +32,9 @@ public class KeyGen {
         if (string.contains("=")){
            string = string.replaceAll("=","");
         }
+        if (string.contains("&")){
+           string = string.replaceAll("&","");
+        }
         return  string;
     }
 }

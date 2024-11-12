@@ -1,5 +1,6 @@
 package com.lifedrained.prepjournal.configs;
 
+import com.lifedrained.prepjournal.consts.Routes;
 import com.lifedrained.prepjournal.services.LoginService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -61,7 +62,7 @@ public class SecurityCfg implements AuthenticationSuccessHandler {
                                           .AuthorizationManagerRequestMatcherRegistry
                                           registry) {
                 registry.requestMatchers("/welcome").permitAll()
-                        .requestMatchers("/admin").hasAuthority("ADMIN")
+                        .requestMatchers(Routes.ADMIN_PAGE).hasAuthority("ADMIN")
                         .requestMatchers("/user").hasAnyAuthority("USER","ADMIN")
                         .anyRequest().authenticated();
 
@@ -86,9 +87,9 @@ public class SecurityCfg implements AuthenticationSuccessHandler {
            }
        }).findFirst().orElse("");
        if (role.equals(ADMIN.value)||role.equals(ADMIN1.value)){
-           response.sendRedirect("/admin");
+           response.sendRedirect(Routes.ADMIN_PAGE);
        } else if (role.equals(USER.value)||role.equals(USER1.value)) {
-           response.sendRedirect("/user");
+           response.sendRedirect(Routes.MASTER_PAGE);
        }else {
            response.sendError(404, "No suitable page found for role: "+role);
        }

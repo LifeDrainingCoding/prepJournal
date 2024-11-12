@@ -33,4 +33,24 @@ public class CustomGrid<T extends BaseEntity,RENDER extends ComponentRenderer<Co
         addClassName(LumoUtility.Flex.AUTO);
 
     }
+    public CustomGrid(Class<T> clazz, List<PropertyRender<T,RENDER>> list, String returnViewId){
+        super(clazz , false );
+        list.forEach(new Consumer<PropertyRender<T,RENDER>>() {
+            @Override
+            public void accept(PropertyRender<T,RENDER> propertyRender) {
+                if(propertyRender.getRender() != null){
+                    addColumn((propertyRender.getRender())).setHeader(propertyRender.getColumnName())
+                            .setAutoWidth(true);
+                }else{
+                    addColumn(propertyRender.getPropetryName()).setHeader(propertyRender.getColumnName())
+                            .setAutoWidth(true);
+                }
+            }
+        });
+
+
+        setRowsDraggable(true);
+        addClassName(LumoUtility.Flex.AUTO);
+
+    }
 }

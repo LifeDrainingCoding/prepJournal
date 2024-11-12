@@ -8,7 +8,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 public class RowWithTxtField extends HorizontalLayout {
    private final TextField textField;
-   private Span label;
+   private final Span label;
     public RowWithTxtField(String text){
         super();
 

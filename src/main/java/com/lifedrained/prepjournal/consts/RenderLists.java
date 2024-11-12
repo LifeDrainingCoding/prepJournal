@@ -1,8 +1,6 @@
 package com.lifedrained.prepjournal.consts;
 
-import com.lifedrained.prepjournal.front.renders.LoginRoleRender;
-import com.lifedrained.prepjournal.front.renders.PropertyRender;
-import com.lifedrained.prepjournal.front.renders.ScheduleDateRender;
+import com.lifedrained.prepjournal.front.renders.*;
 import com.lifedrained.prepjournal.repo.entities.GlobalVisitor;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
@@ -24,12 +22,20 @@ public interface RenderLists {
             new PropertyRender<>("masterName","ФИО педагога"),
             new PropertyRender<>("theme", "Тема занятия"),
             new PropertyRender<>("date","Время проведения занятия",new ScheduleDateRender<>()),
-            new PropertyRender<>("duration","Длительность занятия(минуты)")
+            new PropertyRender<>("duration","Длительность занятия(минуты)"),
+            new PropertyRender<>("isExecuted", "Занятие завершено", new ScheduleBooleanRender())
     );
     List<PropertyRender<GlobalVisitor, ComponentRenderer<Component, GlobalVisitor>>> GLOBAL_VISITORS_RENDER = List.of(
             new PropertyRender<>("id","Номер"),
             new PropertyRender<>("name", "ФИО"),
-            new PropertyRender<>("group","Группы"),
-            new PropertyRender<>("age","Возраст"));
+            new PropertyRender<>("birthDate","Дата рождения: ", new DateVisitorRender()),
+            new PropertyRender<>("age","Возраст"),
+            new PropertyRender<>("linkedMasterName", "ФИО Педагога"),
+            new PropertyRender<>("speciality", "Направление"),
+            new PropertyRender<>("group","Группа"),
+            new PropertyRender<>("visitedSchedulesYear",
+                    "Кол-во посещенных занятий с начала обучения в текущем учебном году"),
+            new PropertyRender<>("notes","Примечания")
+            );
 
 }

@@ -1,5 +1,7 @@
-package com.lifedrained.prepjournal.front.views;
+package com.lifedrained.prepjournal.front.pages.admin.views;
 
+import com.lifedrained.prepjournal.comps.CurrentSession;
+import com.lifedrained.prepjournal.Utils.JSUtils;
 import com.lifedrained.prepjournal.Utils.Notify;
 import com.lifedrained.prepjournal.Utils.OnCheckedEntityHandler;
 import com.lifedrained.prepjournal.Utils.ProcessorBarEvent;
@@ -12,6 +14,7 @@ import com.lifedrained.prepjournal.consts.StringConsts;
 import com.lifedrained.prepjournal.front.interfaces.CRUDControl;
 import com.lifedrained.prepjournal.front.interfaces.OnSearchEventListener;
 import com.lifedrained.prepjournal.front.interfaces.OnCheckedListener;
+import com.lifedrained.prepjournal.front.views.ControlButtons;
 import com.lifedrained.prepjournal.front.views.widgets.CustomGrid;
 import com.lifedrained.prepjournal.repo.GroupsRepo;
 import com.lifedrained.prepjournal.repo.entities.BaseEntity;
@@ -21,8 +24,6 @@ import com.lifedrained.prepjournal.repo.LoginRepo;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 import com.lifedrained.prepjournal.services.GlobalVisitorService;
 import com.lifedrained.prepjournal.services.SchedulesService;
-import com.lifedrained.prepjournal.services.ServiceUtils;
-import com.lifedrained.prepjournal.services.VisitorsService;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
 import com.vaadin.flow.component.html.H1;
@@ -33,9 +34,7 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabSheet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.units.qual.K;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -62,25 +61,27 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
     private final SchedulesService schedulesService;
     private final LoginRepo repo;
     private final GroupsRepo groupsRepo;
-    private final VisitorsService visitorsService;
     private final GlobalVisitorService globalVisitorService;
+    private final CurrentSession session;
+
     private final List<Object> eventServices;
     private final List<HashMap<String,? extends BaseEntity>> maps;
-    private final ServiceUtils utils;
 
     public AdminTabSheetView(LoginRepo repo, SchedulesService service,
                              GroupsRepo groupsRepo,
-                             VisitorsService visitorsService,
-                             GlobalVisitorService globalVisitorService, ServiceUtils utils){
+                             GlobalVisitorService globalVisitorService, CurrentSession session){
         super();
-        this.utils = utils;
+
+        this.session = session;
         schedulesService = service;
         this.repo = repo;
         this.groupsRepo = groupsRepo;
-        this.visitorsService = visitorsService;
         this.globalVisitorService = globalVisitorService;
         eventServices = List.of(repo,schedulesService,globalVisitorService,groupsRepo);
+
+
         setWidthFull();
+        setHeightFull();
         schedulesBar = new ControlButtons<>(this, StringConsts.SchedulesCRUDNames){{
             setId(Ids.SCHEDULES_BAR);
         }};
@@ -123,7 +124,7 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
         schedulesGrid.addItemDoubleClickListener(new ComponentEventListener<ItemDoubleClickEvent<ScheduleEntity>>() {
             @Override
             public void onComponentEvent(ItemDoubleClickEvent<ScheduleEntity> event) {
-                utils.openNewTab(Routes.SCHEDULE_DETAILS+"/"+event.getItem().getUid());
+                JSUtils.openNewTab(Routes.SCHEDULE_DETAILS+"/"+event.getItem().getUid());
                 Notify.info("Здесь должна открываться страница с UID: "+event.getItem().getUid());
             }
         });
@@ -148,8 +149,8 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
         usersContent.add(entitiesGrid);
         add(usersTab,usersContent);
 
-        Tab visitorTab = new Tab("Управление посетителями");
-        visitorsContent = new VerticalLayout(new H1("Список посетителей"));
+        Tab visitorTab = new Tab("Управление обучающимися");
+        visitorsContent = new VerticalLayout(new H1("Список обучающихся"));
         CustomGrid<GlobalVisitor,?>  visitorGrid =  new CustomGrid<>(GlobalVisitor.class,
                 RenderLists.GLOBAL_VISITORS_RENDER, new OnCheckedListener<GlobalVisitor>() {
             @Override
@@ -162,6 +163,11 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
         visitorGrid.setItems(globalVisitors);
         visitorsContent.add(visitorGrid);
         add(visitorTab,visitorsContent );
+
+        Tab visitorImport = new Tab("Импорт обучающихся");
+        VisitorImporter importer = new VisitorImporter(globalVisitorService, groupsRepo);
+        add(visitorImport, importer);
+
         addSelectedChangeListener(this);
     }
 
@@ -213,7 +219,7 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
     public void onDelete(String id) {
        new ProcessorBarEvent(eventServices,List.of(selectedSchedules.values().iterator(),
                selectedLogins.values().iterator(),
-               selectedVisitors.values().iterator()),maps).processEvent(EventType.DELETE,id);
+               selectedVisitors.values().iterator()),maps).processEvent(EventType.DELETE,id,session);
     }
 
     @Override
@@ -221,7 +227,7 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
         new ProcessorBarEvent(eventServices,List.of(selectedSchedules.values().iterator(),
                 selectedLogins.values().iterator(),
                 selectedVisitors.values().iterator()),maps)
-                .processEvent(EventType.UPDATE,id);
+                .processEvent(EventType.UPDATE,id,session);
 
     }
 
@@ -229,6 +235,6 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
     public void onCreate(String id) {
         new ProcessorBarEvent(eventServices, List.of(selectedSchedules.values().iterator(),
                 selectedLogins.values().iterator(),
-                selectedVisitors.values().iterator()),maps).processEvent(EventType.CREATE, id);
+                selectedVisitors.values().iterator()),maps).processEvent(EventType.CREATE, id,session);
     }
 }

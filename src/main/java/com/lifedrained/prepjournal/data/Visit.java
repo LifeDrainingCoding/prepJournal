@@ -17,8 +17,6 @@ import java.io.Serializable;
 public class Visit extends BaseEntity implements Serializable {
     @NotNull
     private String scheduleUID;
-    @NotNull
-    private GlobalVisitor visitor;
     @Nullable
     private String masterName;
     @Nullable

@@ -19,13 +19,14 @@ public abstract class BaseDialog<T> extends Dialog implements CheckableFields<T>
     protected OnConfirmDialogListener<T> confirmListener;
     protected OnCloseDialogListener<?> closeListener;
     protected CustomButton ok,deny;
-    protected List<T> fieldNames;
+    protected List<T> fieldValues;
 
-    public BaseDialog(OnConfirmDialogListener<T> confirmListener, List<T> fieldNames){
+    public BaseDialog(OnConfirmDialogListener<T> confirmListener, List<T> fieldValues){
         this.confirmListener =  confirmListener;
-        this.fieldNames = fieldNames;
+        this.fieldValues = fieldValues;
         initBtns();
         setButtonListeners();
+        setDraggable(true);
     }
     public void setOnCloseListener(OnCloseDialogListener<?> closeListener){
         this.closeListener = closeListener;

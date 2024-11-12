@@ -13,7 +13,7 @@ public class ScheduleDateRender<T extends BaseEntity> extends ComponentRenderer<
         super(new SerializableFunction<T, Component>() {
             @Override
             public Component apply(T t) {
-                return new Text(DateUtils.getStringFromDate(((ScheduleEntity)t).getDate()));
+                return new Text(DateUtils.getStringFromDateTime(((ScheduleEntity)t).getDate()));
             }
         });
     }

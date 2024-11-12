@@ -17,6 +17,7 @@ public interface SchedulesRepo extends JpaRepository<ScheduleEntity, Long> {
     List<ScheduleEntity> findAllByDate(Date date);
     List<ScheduleEntity> findAllByDateBetween(Date start, Date end);
     List<ScheduleEntity> findAllByMasterNameContains(String s);
+    List<ScheduleEntity> findAllByMasterName(String name);
     List<ScheduleEntity> findAllByDuration(int duration);
     List<ScheduleEntity> findAllByDurationBetween(int durStart, int durEnd);
     Optional<ScheduleEntity> findByUid(String uid);

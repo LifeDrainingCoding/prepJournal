@@ -1,19 +1,20 @@
 package com.lifedrained.prepjournal.front.views.widgets;
 
+import com.lifedrained.prepjournal.Utils.DateUtils;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.Getter;
 
+import java.util.Date;
+
 public class RowDatePicker extends HorizontalLayout {
+    private CustomLabel label;
     @Getter
-    private final CustomDateTimePicker dateTimePicker;
-    private final CustomLabel label;
-    public RowDatePicker(String text){
-        dateTimePicker =  new CustomDateTimePicker();
-        label =  new CustomLabel(text);
-        label.removeClassName(LumoUtility.Margin.Right.LARGE);
-        label.addClassName(LumoUtility.Margin.Right.SMALL);
-        label.setMaxHeight(null);
-        add(label, dateTimePicker);
+    private CustomDatePicker datePicker;
+    public RowDatePicker(String text, Date date) {
+        label = new CustomLabel(text);
+        datePicker = new CustomDatePicker();
+        datePicker.setValue(DateUtils.asLocalDate(date));
+
+        add(label,datePicker);
     }
 }

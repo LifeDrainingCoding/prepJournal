@@ -1,16 +1,17 @@
 package com.lifedrained.prepjournal.front.views.dialogs;
 
+import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.Utils.DateUtils;
 import com.lifedrained.prepjournal.Utils.Notify;
+import com.lifedrained.prepjournal.consts.RoleConsts;
 import com.lifedrained.prepjournal.front.interfaces.OnConfirmDialogListener;
-import com.lifedrained.prepjournal.front.views.widgets.RowDatePicker;
+import com.lifedrained.prepjournal.front.views.widgets.RowDateTimePicker;
 import com.lifedrained.prepjournal.front.views.widgets.RowWithTxtField;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,11 +19,15 @@ import java.util.function.Predicate;
 
 public class ChangeSchedulesDialog extends BaseDialog<Object> {
     private RowWithTxtField scheduleName, masterName, duration, theme , description;
-    private RowDatePicker datePicker;
+    private RowDateTimePicker datePicker;
+
+    private final CurrentSession session;
 
     public ChangeSchedulesDialog (OnConfirmDialogListener<Object> confirmDialogListener,
-                                  List<Object> fieldValues){
+                                  List<Object> fieldValues, CurrentSession session){
         super(confirmDialogListener, fieldValues);
+
+        this.session = session;
 
         scheduleName =  new RowWithTxtField(((String) fieldValues.get(0))){{
             setLabelWidth("200px");
@@ -30,23 +35,26 @@ public class ChangeSchedulesDialog extends BaseDialog<Object> {
         masterName =  new RowWithTxtField(((String) fieldValues.get(1))){{
             setLabelWidth("200px");
         }};
-        datePicker = new RowDatePicker("Измените дату если нужно: ");
+        datePicker = new RowDateTimePicker("Измените дату если нужно: ");
         if(fieldValues.get(2) instanceof String){
-            datePicker.getDateTimePicker().setValue(DateUtils.fromDateToLDT(new Date()));
+            datePicker.getDateTimePicker().setValue(DateUtils.asLocalDateTime(new Date()));
         }else if(fieldValues.get(2) instanceof Date){
             Date date = (((Date) fieldValues.get(2)));
-            datePicker.getDateTimePicker().setValue(DateUtils.fromDateToLDT(date));
+            datePicker.getDateTimePicker().setValue(DateUtils.asLocalDateTime(date));
         }
 
-        duration = new RowWithTxtField(((String) fieldNames.get(3))){{
+        duration = new RowWithTxtField(((String) ChangeSchedulesDialog.this.fieldValues.get(3))){{
             getBody().setPattern("[0-9]*");
             setLabelWidth("200px");
         }};
-        theme = new RowWithTxtField(((String) fieldNames.get(4))){{
+        theme = new RowWithTxtField(((String) ChangeSchedulesDialog.this.fieldValues.get(4))){{
             setLabelWidth("200px");
         }};
-
-        getHeader().add(new VerticalLayout(scheduleName,masterName,datePicker,duration,theme));
+        if (session.getRole().equals(RoleConsts.ADMIN.value)){
+            getHeader().add(new VerticalLayout(scheduleName,masterName,datePicker,duration,theme));
+        }else {
+            getHeader().add(new VerticalLayout(scheduleName,datePicker,duration,theme));
+        }
     }
 
     @Override
@@ -74,7 +82,11 @@ public class ChangeSchedulesDialog extends BaseDialog<Object> {
         if(datePicker.getDateTimePicker().getValue() == null){
             return new ArrayList<>(){{
                 add(scheduleName.getFieldText());
-                add(masterName.getFieldText());
+                if (session.getRole().equals(RoleConsts.ADMIN.value)){
+                    add(masterName.getFieldText());
+                }else {
+                    add(session.getEntity().getName());
+                }
                 add("null");
                 add(duration.getFieldText());
                 add(theme.getFieldText());
@@ -82,8 +94,12 @@ public class ChangeSchedulesDialog extends BaseDialog<Object> {
         }
         return new ArrayList<>(){{
             add(scheduleName.getFieldText());
-            add(masterName.getFieldText());
-            add(DateUtils.fromLDTtoDate(datePicker.getDateTimePicker().getValue()));
+            if (session.getRole().equals(RoleConsts.ADMIN.value)){
+                add(masterName.getFieldText());
+            }else {
+                add(session.getEntity().getName());
+            }
+            add(DateUtils.asDate(datePicker.getDateTimePicker().getValue()));
             add(duration.getFieldText());
             add(theme.getFieldText());
         }};
@@ -95,8 +111,7 @@ public class ChangeSchedulesDialog extends BaseDialog<Object> {
         return data.stream().anyMatch(new Predicate<Object>() {
             @Override
             public boolean test(Object o) {
-                if (o instanceof String) {
-                    String s = (String) o;
+                if (o instanceof String s) {
                     if (s.isEmpty()){
                         Notify.error("Заполните все поля!");
                     }

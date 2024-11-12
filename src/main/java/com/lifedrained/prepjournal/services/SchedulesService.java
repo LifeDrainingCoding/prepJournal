@@ -1,21 +1,17 @@
 package com.lifedrained.prepjournal.services;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.lifedrained.prepjournal.Utils.NameProcessor;
 import com.lifedrained.prepjournal.repo.SchedulesRepo;
-import com.lifedrained.prepjournal.repo.entities.GlobalVisitor;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
-import com.lifedrained.prepjournal.repo.entities.VisitorEntity;
+
 import lombok.Getter;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
+
 import java.util.List;
-import java.util.function.Predicate;
+
 
 @Service
 @Getter
@@ -46,32 +42,5 @@ public class SchedulesService {
 
     }
 
-    public List<ScheduleEntity> findAllByGroups(List<String> groups){
-        List<ScheduleEntity> all =getRepo().findAll();
-        all.removeIf(new Predicate<ScheduleEntity>() {
-            @Override
-            public boolean test(ScheduleEntity entity) {
-                List<VisitorEntity> visitorEntities = getVisitorsForSchedule(entity);
-                return visitorEntities.stream().noneMatch(new Predicate<VisitorEntity>() {
-                    @Override
-                    public boolean test(VisitorEntity visitorEntity) {
 
-                        return groups.stream().anyMatch(new Predicate<String>() {
-                            @Override
-                            public boolean test(String s) {
-                                Type type = new TypeToken<GlobalVisitor>(){}.getType();
-                                GlobalVisitor globalVisitor = new Gson().fromJson(visitorEntity.getJsonGlobalEntity(),type);
-                                return globalVisitor.getGroup().contains(s);
-                            }
-                        });
-                    }
-                });
-            }
-        });
-        return all;
-    }
-    public List<VisitorEntity> getVisitorsForSchedule(ScheduleEntity entity){
-        Type listType = new TypeToken<List<VisitorEntity>>(){}.getType();
-        return new Gson().fromJson(entity.getJsonVisitors(),listType);
-    }
 }

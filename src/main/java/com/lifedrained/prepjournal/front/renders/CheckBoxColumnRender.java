@@ -26,4 +26,20 @@ public class CheckBoxColumnRender<T extends BaseEntity> extends ComponentRendere
             }
         });
     }
+    public CheckBoxColumnRender(OnCheckedListener<T> listener, String reutrnViewId, String text) {
+        super(new SerializableFunction<T, Component>() {
+            @Override
+            public Component apply(T t) {
+                Checkbox checkbox = new Checkbox(text);
+                checkbox.setId(KeyGen.generateKey());
+                checkbox.addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<Checkbox, Boolean>>() {
+                    @Override
+                    public void valueChanged(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event) {
+                        listener.onChecked(event.getSource().getId().get(),t, event.getValue(),reutrnViewId);
+                    }
+                });
+                return checkbox;
+            }
+        });
+    }
 }

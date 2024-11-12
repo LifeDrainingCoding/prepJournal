@@ -14,7 +14,12 @@ public interface StringConsts {
     List<String> VisitorCRUDNames = List.of("Добавить посетителя",
             "Обновить выбранных посетителей",
             "Удалить выбранных посетителей");
-    List<String> VisitorFieldNames = List.of("ФИО: ", "Группы: ", "Возраст: ");
+    List<Object> VisitorFieldNames = List.of("ФИО: ", "Дата рождения: ",
+            "Возраст: ", "ФИО Педагога: ",
+            "Направление: ","Группа: ",
+            "Кол-во посещенных занятий с начала обучения в текущем учебном году: ",
+            "Примечания: "
+             );
 
     List<String> AccFieldNames = List.of(new String[]{
            "ФИО: ",
@@ -24,7 +29,7 @@ public interface StringConsts {
    });
     List<Object> SchedulesFieldNames = List.of(
            "Hазвание занятия: ",
-           "Имя преподавателя: ",
+           "ФИО педагога: ",
            "Дата проведения занятия: ",
            "Длительность занятия(Минуты): ",
            "Тема занятия: ",
