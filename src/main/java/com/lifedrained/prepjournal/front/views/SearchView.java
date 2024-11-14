@@ -1,6 +1,6 @@
 package com.lifedrained.prepjournal.front.views;
 
-import com.lifedrained.prepjournal.consts.SearchType;
+import com.lifedrained.prepjournal.data.searchengine.SearchTypes;
 import com.lifedrained.prepjournal.front.interfaces.OnSearchEventListener;
 import com.lifedrained.prepjournal.front.views.widgets.CustomButton;
 import com.lifedrained.prepjournal.front.views.widgets.CustomLabel;
@@ -12,7 +12,7 @@ public class SearchView extends HorizontalLayout {
     private CustomLabel label , optionalLabel;
     private CustomButton searchBtn;
     private TextField field, field1,field2,field3;
-    private ComboBox<SearchType> searchTypeComboBox;
+    private ComboBox<SearchTypes> searchTypeComboBox;
     public SearchView(OnSearchEventListener eventListener ){
         super();
 

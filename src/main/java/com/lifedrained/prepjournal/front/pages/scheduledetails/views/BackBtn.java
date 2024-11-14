@@ -1,4 +1,4 @@
-package com.lifedrained.prepjournal.front.pages.schedule_details.views;
+package com.lifedrained.prepjournal.front.pages.scheduledetails.views;
 
 import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.consts.RoleConsts;
@@ -10,7 +10,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import freemarker.core._ArrayEnumeration;
 
 public class BackBtn extends Button {
     public BackBtn(CurrentSession session){

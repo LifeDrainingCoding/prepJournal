@@ -1,4 +1,4 @@
-package com.lifedrained.prepjournal.front.pages.schedule_details.views;
+package com.lifedrained.prepjournal.front.pages.scheduledetails.views;
 import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.Utils.Notify;
 import com.lifedrained.prepjournal.front.views.widgets.CustomTextEditor;

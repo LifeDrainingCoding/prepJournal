@@ -1,11 +1,11 @@
-package com.lifedrained.prepjournal.front.pages.schedule_details;
+package com.lifedrained.prepjournal.front.pages.scheduledetails;
 
 import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.Utils.Notify;
 import com.lifedrained.prepjournal.consts.RoleConsts;
 import com.lifedrained.prepjournal.consts.Routes;
-import com.lifedrained.prepjournal.front.pages.schedule_details.views.BackBtn;
-import com.lifedrained.prepjournal.front.pages.schedule_details.views.ScheduleTabSheetView;
+import com.lifedrained.prepjournal.front.pages.scheduledetails.views.BackBtn;
+import com.lifedrained.prepjournal.front.pages.scheduledetails.views.ScheduleTabSheetView;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 import com.lifedrained.prepjournal.services.GlobalVisitorService;
 import com.lifedrained.prepjournal.services.SchedulesService;

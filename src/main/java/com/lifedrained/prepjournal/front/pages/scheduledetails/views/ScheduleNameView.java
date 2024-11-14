@@ -1,4 +1,4 @@
-package com.lifedrained.prepjournal.front.pages.schedule_details.views;
+package com.lifedrained.prepjournal.front.pages.scheduledetails.views;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;

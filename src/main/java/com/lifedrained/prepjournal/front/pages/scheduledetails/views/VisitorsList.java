@@ -1,4 +1,4 @@
-package com.lifedrained.prepjournal.front.pages.schedule_details.views;
+package com.lifedrained.prepjournal.front.pages.scheduledetails.views;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -27,7 +27,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -92,13 +91,12 @@ public class VisitorsList extends VerticalLayout implements OnCheckedListener<Gl
         renders.add(new PropertyRender<>("isVisited", "Присутствие на занятии(да/нет)" ,
                 new CheckBoxColumnRender<>(this, "")));
 
-        CustomGrid<GlobalVisitor, ?> vistorsGrid = new CustomGrid<GlobalVisitor, ComponentRenderer<Component,GlobalVisitor>>
-                (GlobalVisitor.class,renders,"");
+        CustomGrid<GlobalVisitor, ?> vistorsGrid = new CustomGrid<>
+                (GlobalVisitor.class, renders, "");
         vistorsGrid.setEnabled(!entity.isExecuted());
         vistorsGrid.setItems(visitors);
-        executeSchedule = new CustomButton("Сохранить изменения", (ComponentEventListener<ClickEvent<Button>>) event -> visitedKids.forEach(new BiConsumer<String, GlobalVisitor>() {
-            @Override
-            public void accept(String s, GlobalVisitor globalVisitor) {
+        executeSchedule = new CustomButton("Сохранить изменения", (ComponentEventListener<ClickEvent<Button>>) event -> {
+            visitedKids.forEach((s, globalVisitor) -> {
                 List<Visit> visits =SerializationUtils.toListVisits(globalVisitor.getJsonVisits());
                 Visit visit = SerializationUtils.findByUid(visits, entity.getUid());
                 visit.setIsVisited(true);
@@ -107,8 +105,12 @@ public class VisitorsList extends VerticalLayout implements OnCheckedListener<Gl
 
                 int numOfVisitsYear = globalVisitor.getVisitedSchedulesYear()+1;
                 globalVisitor.setVisitedSchedulesYear(numOfVisitsYear);
+
+
             }
-        }));
+            );
+            Notify.success("Изменения сохранены!");
+        });
 
         add(group,addBtn,vistorsGrid,executeSchedule);
     }

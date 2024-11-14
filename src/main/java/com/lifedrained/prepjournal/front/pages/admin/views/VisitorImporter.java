@@ -70,32 +70,39 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
             rows.forEach(new Consumer<String[]>() {
                 @Override
                 public void accept(String[] s) {
-                    if(!(s.length >= GlobalVisitor.PARAMS_LENGTH)){
+                    if (!(s.length >= GlobalVisitor.PARAMS_LENGTH)) {
                         log.error("Ошибка при чтении строки. Пропуск строки. {} ", Arrays.deepToString(s));
                         Notify.warning(String.format("Ошибка при чтении строки %d , она будет пропущена и не добавлена", rows.indexOf(s)));
                         return;
                     }
-                    if (Arrays.stream(s).anyMatch(Objects::isNull)){
+                    if (Arrays.stream(s).anyMatch(Objects::isNull)) {
                         return;
                     }
 
-                    String group = s[4];
-                    Date birthDate = DateUtils.getDateFromString(s[1]);
-                    LocalDate localDate = DateUtils.asLocalDate(birthDate);
-                    int age = (int) ChronoUnit.YEARS.between(localDate,LocalDate.now());
+                    try {
 
-                    GlobalVisitor visitor = new GlobalVisitor(s[0],
-                            birthDate,
-                            age,s[2],s[3],group,
-                            Integer.parseInt(s[5]),s[6]);
 
-                    if (!groupsRepo.existsByGroup(group)){
-                        GroupEntity groupEntity = new GroupEntity();
-                        groupEntity.setGroup(group);
-                        groupsRepo.save(groupEntity);
+                        String group = s[4];
+                        Date birthDate = DateUtils.getDateFromString(s[1]);
+                        LocalDate localDate = DateUtils.asLocalDate(birthDate);
+                        int age = (int) ChronoUnit.YEARS.between(localDate, LocalDate.now());
+
+                        GlobalVisitor visitor = new GlobalVisitor(s[0],
+                                birthDate,
+                                age, s[2], s[3], group,
+                                Integer.parseInt(s[5]), s[6]);
+
+                        if (!groupsRepo.existsByGroup(group)) {
+                            GroupEntity groupEntity = new GroupEntity();
+                            groupEntity.setGroup(group);
+                            groupsRepo.save(groupEntity);
+                        }
+
+                        service.getRepo().save(visitor);
+                    }catch (Exception ex){
+                        log.warn(ex);
+                        return;
                     }
-
-                    service.getRepo().save(visitor);
                 }
             });
 
