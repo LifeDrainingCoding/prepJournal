@@ -12,7 +12,7 @@ import com.lifedrained.prepjournal.consts.Ids;
 import com.lifedrained.prepjournal.consts.RenderLists;
 import com.lifedrained.prepjournal.consts.StringConsts;
 import com.lifedrained.prepjournal.front.interfaces.CRUDControl;
-import com.lifedrained.prepjournal.front.interfaces.OnSearchEventListener;
+import com.lifedrained.prepjournal.data.searchengine.OnSearchEventListener;
 import com.lifedrained.prepjournal.front.interfaces.OnCheckedListener;
 import com.lifedrained.prepjournal.front.views.ControlButtons;
 import com.lifedrained.prepjournal.front.views.widgets.CustomGrid;
@@ -43,7 +43,7 @@ import java.util.function.Consumer;
 
 import static com.lifedrained.prepjournal.consts.Ids.tabIds.*;
 
-public class AdminTabSheetView extends TabSheet implements OnSearchEventListener,
+public class AdminTabSheetView extends TabSheet implements
         ComponentEventListener<TabSheet.SelectedChangeEvent>, CRUDControl {
 
     private static final Logger log = LogManager.getLogger(AdminTabSheetView.class);
@@ -171,10 +171,6 @@ public class AdminTabSheetView extends TabSheet implements OnSearchEventListener
         addSelectedChangeListener(this);
     }
 
-    @Override
-    public void onSearchEvent(List<ScheduleEntity> entities) {
-        schedulesGrid.setItems(entities);
-    }
 
 
     @Override

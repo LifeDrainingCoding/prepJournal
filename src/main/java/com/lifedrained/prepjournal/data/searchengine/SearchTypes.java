@@ -1,7 +1,5 @@
 package com.lifedrained.prepjournal.data.searchengine;
 
-import java.util.List;
-
 public interface SearchTypes {
    enum SCHEDULE_TYPE {
        BY_DATE(1), BY_DATE_BETWEEN(2), BY_MASTER_NAME(3),
@@ -47,5 +45,6 @@ public interface SearchTypes {
        }
 
    }
+
 
 }

@@ -1,7 +1,7 @@
 package com.lifedrained.prepjournal.front.views;
 
 import com.lifedrained.prepjournal.data.searchengine.SearchTypes;
-import com.lifedrained.prepjournal.front.interfaces.OnSearchEventListener;
+import com.lifedrained.prepjournal.data.searchengine.OnSearchEventListener;
 import com.lifedrained.prepjournal.front.views.widgets.CustomButton;
 import com.lifedrained.prepjournal.front.views.widgets.CustomLabel;
 import com.vaadin.flow.component.combobox.ComboBox;

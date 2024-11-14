@@ -1,16 +1,15 @@
 package com.lifedrained.prepjournal.events;
 
+import com.lifedrained.prepjournal.repo.entities.BaseEntity;
 import lombok.Getter;
 
+
+@Getter
 public abstract class Event {
-    @Getter
-    private EventType type;
+    private final EventType type;
+
 
     public Event(EventType type) {
-        this.type = type;
-    }
-
-    private void setType(EventType type){
         this.type = type;
     }
 
