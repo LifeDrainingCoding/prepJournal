@@ -10,7 +10,8 @@ public class CustomLabel extends Span {
     public CustomLabel(String label){
         super(label);
         addClassName(LumoUtility.Margin.Right.SMALL);
-        setMaxWidth("150px");
+        setMaxWidth("200px");
+        setWidth("200px");
         setMaxHeight(null);
         getStyle().set("word-wrap", "break-word");
 

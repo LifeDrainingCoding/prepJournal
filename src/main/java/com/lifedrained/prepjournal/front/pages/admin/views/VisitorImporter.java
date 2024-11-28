@@ -3,7 +3,7 @@ package com.lifedrained.prepjournal.front.pages.admin.views;
 import com.lifedrained.prepjournal.Utils.DateUtils;
 import com.lifedrained.prepjournal.Utils.Notify;
 import com.lifedrained.prepjournal.front.views.Refreshable;
-import com.lifedrained.prepjournal.front.views.widgets.CustomUpload;
+import com.lifedrained.prepjournal.front.i18n.CustomUploadI18N;
 import com.lifedrained.prepjournal.repo.GroupsRepo;
 import com.lifedrained.prepjournal.repo.entities.GlobalVisitor;
 import com.lifedrained.prepjournal.repo.entities.GroupEntity;
@@ -30,12 +30,11 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class VisitorImporter extends VerticalLayout implements Refreshable {
     private static final Logger log = LogManager.getLogger(VisitorImporter.class);
     private final MultiFileMemoryBuffer buffer;
-    private final CustomUpload upload;
+    private final CustomUploadI18N upload;
     private final GlobalVisitorService service;
     private final GroupsRepo groupsRepo;
     public VisitorImporter(GlobalVisitorService service, GroupsRepo groupsRepo) {
@@ -43,7 +42,7 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
         this.groupsRepo = groupsRepo;
         add(new H1("Вы можете загрузить таблицу excel в формате csv для импорта обучающихся"));
         buffer = new MultiFileMemoryBuffer();
-        upload =  new CustomUpload(buffer);
+        upload =  new CustomUploadI18N(buffer);
 
         upload.addSucceededListener(new ComponentEventListener<SucceededEvent>() {
             @Override

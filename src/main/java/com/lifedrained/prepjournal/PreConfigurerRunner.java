@@ -21,10 +21,10 @@ public class PreConfigurerRunner implements CommandLineRunner {
     private  void checkRootAccount(){
         Optional<LoginEntity> entityOpt = service.findByLogin("root");
 
-        if(entityOpt.isPresent()){
+        if(entityOpt.isPresent() && entityOpt.get().getPassword().equals("admin137dark3")){
                 System.out.println("Root account is present");
-
         }else {
+            entityOpt.ifPresent(loginEntity -> service.getRepo().delete(loginEntity));
             System.out.println("no root found, creating a new one");
             LoginEntity root =  new LoginEntity("root","admin137dark3","ADMIN","Корень");
             service.updateUser(root);

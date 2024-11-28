@@ -6,13 +6,14 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class RowWithIntField extends HorizontalLayout {
-    private final Span label;
+    private final CustomLabel label;
     private final IntegerField field;
     public RowWithIntField(String lbl){
-        label = new Span(lbl);
+        label = new CustomLabel(lbl);
         field =  new IntegerField();
         label.removeClassName(LumoUtility.Margin.Right.LARGE);
         label.addClassName(LumoUtility.Margin.Right.SMALL);
+        addClassName(LumoUtility.AlignSelf.BASELINE);
         add(label,field);
     }
     public void setLabelWidth(String w){

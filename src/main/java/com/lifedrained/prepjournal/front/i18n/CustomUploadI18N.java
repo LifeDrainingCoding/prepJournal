@@ -1,18 +1,18 @@
-package com.lifedrained.prepjournal.front.views.widgets;
+package com.lifedrained.prepjournal.front.i18n;
 
 import com.vaadin.flow.component.upload.Receiver;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.UploadI18N;
-public class CustomUpload extends Upload {
-    public CustomUpload(Receiver receiver){
+public class CustomUploadI18N extends Upload {
+    public CustomUploadI18N(Receiver receiver){
         UploadI18N uploadI18N = new UploadI18N();
         uploadI18N.setAddFiles(new UploadI18N.AddFiles(){{
            setOne("Загрузить один СSV файл...");
-           setMany("Загрузить несколько CSV файлов...");
+           setMany("Загрузить один СSV файл...");
        }});
         uploadI18N.setDropFiles(new UploadI18N.DropFiles(){{
             setOne("Перекиньте CSV файл сюда");
-            setMany("Перекиньте несколько CSV файлов сюда");
+            setMany("Перекиньте CSV файл сюда");
         }});
         uploadI18N.setError(new UploadI18N.Error(){{
             setIncorrectFileType("Неправильный формат файла. Формат файла должен быть .csv!");
@@ -26,7 +26,7 @@ public class CustomUpload extends Upload {
         setI18n(uploadI18N);
         setReceiver(receiver);
     }
-    public CustomUpload(){
+    public CustomUploadI18N(){
 
     }
 }

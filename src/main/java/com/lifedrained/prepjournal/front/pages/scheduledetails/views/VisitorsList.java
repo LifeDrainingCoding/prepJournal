@@ -91,10 +91,11 @@ public class VisitorsList extends VerticalLayout implements OnCheckedListener<Gl
         renders.add(new PropertyRender<>("isVisited", "Присутствие на занятии(да/нет)" ,
                 new CheckBoxColumnRender<>(this, "")));
 
-        CustomGrid<GlobalVisitor, ?> vistorsGrid = new CustomGrid<>
-                (GlobalVisitor.class, renders, "");
-        vistorsGrid.setEnabled(!entity.isExecuted());
-        vistorsGrid.setItems(visitors);
+
+        CustomGrid<GlobalVisitor, ?> visitorsGrid = new CustomGrid<>
+                (GlobalVisitor.class, renders);
+        visitorsGrid.setEnabled(!entity.isExecuted());
+        visitorsGrid.setItems(visitors);
         executeSchedule = new CustomButton("Сохранить изменения", (ComponentEventListener<ClickEvent<Button>>) event -> {
             visitedKids.forEach((s, globalVisitor) -> {
                 List<Visit> visits =SerializationUtils.toListVisits(globalVisitor.getJsonVisits());
@@ -112,7 +113,7 @@ public class VisitorsList extends VerticalLayout implements OnCheckedListener<Gl
             Notify.success("Изменения сохранены!");
         });
 
-        add(group,addBtn,vistorsGrid,executeSchedule);
+        add(group,addBtn,visitorsGrid,executeSchedule);
     }
 
     @Override

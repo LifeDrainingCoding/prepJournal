@@ -4,6 +4,7 @@ import com.lifedrained.prepjournal.configs.LoginDetails;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.repo.LoginRepo;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,8 +16,9 @@ import java.util.function.Supplier;
 
 @Service
 @AllArgsConstructor
+@Getter
 public class LoginService implements UserDetailsService {
-    LoginRepo repo;
+     private LoginRepo repo;
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
