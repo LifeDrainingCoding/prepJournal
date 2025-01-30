@@ -51,7 +51,7 @@ public class ScheduleEntity extends BaseEntity  {
     @Column(name = "is_executed")
     private boolean isExecuted = false;
 
-    @Column(name = "visitors")
+    @Column(name = "visitors", columnDefinition = "LONG VARCHAR")
     private String jsonVisitors;
 
     @Column(name= "schedule_UID", nullable = false, unique = true)

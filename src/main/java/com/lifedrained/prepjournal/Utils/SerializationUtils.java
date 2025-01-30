@@ -13,16 +13,17 @@ public class SerializationUtils {
        return new Gson().toJson(visits);
     }
     public static List<Visit> toListVisits(String json){
-        Type type = new TypeToken<List<Visit>>(){}.getType();
+        Type type = getJsonType();
         return new Gson().fromJson(json, type);
     }
     public static Visit findByUid(List<Visit> visits,String uid){
-        visits.removeIf(new Predicate<Visit>() {
-            @Override
-            public boolean test(Visit visit) {
-                return !visit.getScheduleUID().equals(uid);
-            }
-        });
-        return visits.get(0);
+        visits.removeIf(visit -> !visit.getScheduleUID().equals(uid));
+        if (!visits.isEmpty()){
+            return visits.get(0);
+        }
+        return null;
+    }
+    public static Type getJsonType(){
+        return new TypeToken<List<Visit>>(){}.getType();
     }
 }

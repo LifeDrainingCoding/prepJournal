@@ -62,7 +62,7 @@ public class ScheduleTabSheetView extends TabSheet implements ComponentEventList
         add(scheduleDescription,layout);
 
         Tab visitorsTab = new Tab("Посетители занятия");
-        VisitorsList list = new VisitorsList(globalVisitorService, entity);
+        VisitorsList list = new VisitorsList(globalVisitorService, entity,service);
         add(visitorsTab, list);
 
 

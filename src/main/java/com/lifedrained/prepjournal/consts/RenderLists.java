@@ -1,5 +1,6 @@
 package com.lifedrained.prepjournal.consts;
 
+import com.lifedrained.prepjournal.data.StatItem;
 import com.lifedrained.prepjournal.front.renders.*;
 import com.lifedrained.prepjournal.repo.entities.GlobalVisitor;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
@@ -37,5 +38,11 @@ public interface RenderLists {
                     "Кол-во посещенных занятий с начала обучения в текущем учебном году"),
             new PropertyRender<>("notes","Примечания")
             );
+    List<PropertyRender<StatItem, ComponentRenderer<Component, StatItem>>> STATS_RENDER = List.of(
+            new PropertyRender<>("masterName","ФИО преподавателя"),
+            new PropertyRender<>("visitedHours","Посещенные часы занятий"),
+            new PropertyRender<>("diff","Пропущенные часы занятий"),
+            new PropertyRender<>("totalHours","Всего часов занятий")
+    );
 
 }

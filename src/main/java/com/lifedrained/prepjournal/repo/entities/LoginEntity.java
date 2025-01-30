@@ -13,7 +13,6 @@ import java.util.Locale;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table( name="USERS", schema = "APP")
 public class LoginEntity extends BaseEntity {
@@ -37,6 +36,9 @@ public class LoginEntity extends BaseEntity {
     @Column(name = "UID", nullable = false)
     private String uid;
 
+    public LoginEntity() {
+        uid = KeyGen.generateKey();
+    }
 
     public LoginEntity(String login, String password, String role) {
         this.login = login;

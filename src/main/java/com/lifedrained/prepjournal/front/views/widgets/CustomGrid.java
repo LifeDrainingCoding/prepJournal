@@ -11,7 +11,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import java.util.List;
 import java.util.function.Consumer;
-public class CustomGrid<T extends BaseEntity,RENDER extends ComponentRenderer<Component,T>> extends Grid<T> {
+public class CustomGrid<T ,RENDER extends ComponentRenderer<Component,T>> extends Grid<T> {
     public CustomGrid(Class<T> clazz, List<PropertyRender<T,RENDER>> list, OnCheckedListener<T> listener, String returnViewId){
         super(clazz , false );
         addColumn(new CheckBoxColumnRender<T>(listener, returnViewId)).setAutoWidth(true).setClassName(LumoUtility.Flex.AUTO);

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.lifedrained'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0'
 
 java {
     toolchain {
@@ -21,6 +21,10 @@ configurations {
     }
 }
 
+vaadin{
+    productionMode = true
+    forceProductionBuild = true
+}
 repositories {
     mavenCentral()
 }
@@ -49,11 +53,6 @@ dependencies {
     implementation 'org.springframework.integration:spring-integration-http'
     implementation 'org.springframework.integration:spring-integration-jdbc'
     implementation 'org.springframework.integration:spring-integration-jpa'
-
-
-    // https://mvnrepository.com/artifact/org.apache.derby/derby
-    // https://mvnrepository.com/artifact/in.virit/viritin
-    implementation 'in.virit:viritin:2.10.0'
     // https://mvnrepository.com/artifact/com.opencsv/opencsv
     implementation 'com.opencsv:opencsv:5.9'
     implementation 'org.apache.derby:derby:10.17.1.0'
@@ -69,9 +68,10 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
     // https://mvnrepository.com/artifact/org.apache.derby/derbytools
     implementation 'org.apache.derby:derbytools:10.17.1.0'
+    runtimeOnly 'org.apache.derby:derby'
     // https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
     implementation 'org.apache.commons:commons-collections4:4.5.0-M2'
 
@@ -98,6 +98,13 @@ dependencyManagement {
 tasks.named('test') {
     outputs.dir snippetsDir
     useJUnitPlatform()
+}
+bootBuildImage {
+    imageName = 'com.lifedrained/prepjournal:latest'
+    environment = [
+            'BP_JVM_VERSION' : '21',
+            'BP_APP_PORT' : '8080'
+    ]
 }
 
 tasks.named('asciidoctor') {

@@ -29,6 +29,7 @@ import com.lifedrained.prepjournal.services.GlobalVisitorService;
 import com.lifedrained.prepjournal.services.SchedulesService;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.notification.Notification;
@@ -117,22 +118,19 @@ public class AdminTabSheetView extends TabSheet implements
         schedulesTab.setId(SCHEDULES_CONTENT);
 
         schedulesGrid = new CustomGrid<>(ScheduleEntity.class,
-                RenderLists.SCHEDULES_RENDERS, new OnCheckedListener<ScheduleEntity>() {
-            @Override
-            public void onChecked(String id, ScheduleEntity entity, boolean isChecked, String viewId) {
-                new OnCheckedEntityHandler<ScheduleEntity>(id, entity, isChecked,selectedSchedules, schedulesBar);
-            }
-        }, Ids.SCHEDULES_BAR);
+                RenderLists.SCHEDULES_RENDERS, (id, entity, isChecked, viewId) ->
+                new OnCheckedEntityHandler<>(id, entity, isChecked, selectedSchedules, schedulesBar),
+                Ids.SCHEDULES_BAR);
+
         List<ScheduleEntity> scheduleEntities = schedulesService.getRepo().findAll();
         schedulesGrid.setItems(scheduleEntities);
         schedulesContent.add(schedulesGrid);
-        schedulesGrid.addItemDoubleClickListener(new ComponentEventListener<ItemDoubleClickEvent<ScheduleEntity>>() {
-            @Override
-            public void onComponentEvent(ItemDoubleClickEvent<ScheduleEntity> event) {
-                JSUtils.openNewTab(Routes.SCHEDULE_DETAILS+"/"+event.getItem().getUid());
-                Notify.info("Здесь должна открываться страница с UID: "+event.getItem().getUid());
-            }
+
+        schedulesGrid.addItemDoubleClickListener( event -> {
+            JSUtils.openNewTab(Routes.SCHEDULE_DETAILS+"/"+event.getItem().getUid());
+            Notify.info("Здесь должна открываться страница с UID: "+event.getItem().getUid());
         });
+
         schedulesContent.addComponentAtIndex(1,schedulesBar);
         add(schedulesTab, schedulesContent);
 
@@ -144,29 +142,37 @@ public class AdminTabSheetView extends TabSheet implements
 
         List<LoginEntity> entities = repo.findAll();
         CustomGrid<LoginEntity,?> entitiesGrid = new CustomGrid<>(LoginEntity.class, RenderLists.LOGIN_RENDERS,
-                new OnCheckedListener<LoginEntity>() {
-                    @Override
-                    public void onChecked(String id, LoginEntity entity, boolean isChecked, String viewId) {
-                        new OnCheckedEntityHandler<LoginEntity>(id,entity,isChecked,selectedLogins, accountBar);
-                    }
-                }, Ids.ACCOUNT_BAR);
+                (id, entity, isChecked, viewId) ->
+                        new OnCheckedEntityHandler<>(id, entity, isChecked, selectedLogins, accountBar),
+                Ids.ACCOUNT_BAR);
+
         entitiesGrid.setItems(entities);
+
+        GridContextMenu<LoginEntity> entitiesMenu = entitiesGrid.addContextMenu();
+        entitiesMenu.addItem("Просмотреть статистику", event ->{
+           JSUtils.openNewTab(Routes.STATISTICS_PAGE+"/admin");
+        });
+
         usersContent.add(entitiesGrid);
+
         add(usersTab,usersContent);
 
         Tab visitorTab = new Tab("Управление обучающимися");
         visitorsContent = new VerticalLayout(new H1("Список обучающихся"));
+
         visitorGrid =  new CustomGrid<>(GlobalVisitor.class,
-                RenderLists.GLOBAL_VISITORS_RENDER, new OnCheckedListener<GlobalVisitor>() {
-            @Override
-            public void onChecked(String id, GlobalVisitor entity, boolean isChecked, String viewId) {
-                new OnCheckedEntityHandler<GlobalVisitor>(id,entity,isChecked,selectedVisitors,visitorBar);
-            }
-        },Ids.VISITORS_BAR);
+                RenderLists.GLOBAL_VISITORS_RENDER, (id, entity, isChecked, viewId) ->
+                new OnCheckedEntityHandler<>(id, entity, isChecked, selectedVisitors, visitorBar),
+                Ids.VISITORS_BAR);
+
         visitorTab.setId(VISITORS_CONTENT);
+
+
+
         ArrayList<GlobalVisitor> globalVisitors = (ArrayList<GlobalVisitor>) globalVisitorService.getRepo().findAll();
         visitorView = visitorGrid.setItems(globalVisitors);
         visitorsContent.add(visitorGrid);
+
         visitorsContent.addComponentAtIndex(1, new SearchView<>(this,
                 SearchTypes.VISITOR_TYPE.values(), globalVisitors));
         add(visitorTab,visitorsContent );

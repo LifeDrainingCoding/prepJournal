@@ -59,9 +59,7 @@ public class ProcessorBarEvent {
                         }
                     }, StringConsts.AccFieldNames);
                     case Ids.SCHEDULES_BAR -> {
-                        ChangeSchedulesDialog scheludesDialog =  new ChangeSchedulesDialog(new OnConfirmDialogListener<Object>() {
-                        @Override
-                        public void onConfirm(List<Object> data) {
+                        ChangeSchedulesDialog scheludesDialog =  new ChangeSchedulesDialog(data -> {
                             ScheduleEntity entity = new ScheduleEntity();
                             entity.setScheduleName((String) data.get(0));
                             entity.setMasterName((String) data.get(1));
@@ -70,8 +68,7 @@ public class ProcessorBarEvent {
                             entity.setTheme((String) data.get(4));
                             schedulesService.getRepo().save(entity);
                             refresh();
-                        }
-                    },  StringConsts.SchedulesFieldNames,session);
+                        },  StringConsts.SchedulesFieldNames,session);
                         scheludesDialog.open();
                     }
                     case Ids.VISITORS_BAR -> {
@@ -82,7 +79,7 @@ public class ProcessorBarEvent {
                                 String group = (String) returnData.get(5);
 
                                 GlobalVisitor visitor = new GlobalVisitor((String) returnData.get(0),
-                                        (Date) returnData.get(1),(int)returnData.get(2),
+                                        (Date) returnData.get(1), ((int) returnData.get(2)),
                                         (String) returnData.get(3), (String) returnData.get(4),
                                         group,(int) returnData.get(6),
                                         (String) returnData.get(7));

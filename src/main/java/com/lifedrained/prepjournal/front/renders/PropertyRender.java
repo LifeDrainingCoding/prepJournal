@@ -9,7 +9,7 @@ import org.springframework.lang.Nullable;
 
 @Getter
 @Setter
-public class PropertyRender<ENTITY extends BaseEntity,T extends ComponentRenderer<Component,ENTITY>> {
+public class PropertyRender<ENTITY ,T extends ComponentRenderer<Component,ENTITY>> {
     private String propetryName, columnName;
     @Nullable
     T render = null;

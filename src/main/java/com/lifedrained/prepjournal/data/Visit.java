@@ -17,10 +17,12 @@ import java.io.Serializable;
 public class Visit extends BaseEntity implements Serializable {
     @NotNull
     private String scheduleUID;
-    @Nullable
+    @NotNull
     private String masterName;
     @Nullable
     private Integer hoursWasted;
     @NonNull
     private Boolean isVisited;
+
+    private long visitorId;
 }

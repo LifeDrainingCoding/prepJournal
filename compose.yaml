@@ -1,8 +1,13 @@
+version: "1.0"
 services:
-  rabbitmq:
-    image: 'rabbitmq:latest'
-    environment:
-      - 'RABBITMQ_DEFAULT_PASS=secret'
-      - 'RABBITMQ_DEFAULT_USER=myuser'
+  app:
+    build: .
     ports:
-      - '5672'
+      - "8080:8080"
+    environment:
+        - SPRING_DATASOURCE_URL=jdbc:jdbc:derby:prodDB;create=true
+        - SPRING_DATASOURCE_USERNAME=root
+        - SPRING_DATASOURCE_PASSWORD=admin137dark3
+
+
+

@@ -15,6 +15,7 @@ import com.lifedrained.prepjournal.front.views.widgets.RowWithTxtField;
 import com.lifedrained.prepjournal.repo.entities.GlobalVisitor;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 import com.lifedrained.prepjournal.services.GlobalVisitorService;
+import com.lifedrained.prepjournal.services.SchedulesService;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -25,6 +26,7 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -35,75 +37,87 @@ public class VisitorsList extends VerticalLayout implements OnCheckedListener<Gl
     private GlobalVisitorService globalVisitorService;
     private CustomButton addBtn, executeSchedule;
     private LinkedHashMap<String, GlobalVisitor> visitedKids;
-    public VisitorsList( GlobalVisitorService globalVisitorService, ScheduleEntity entity){
+    public VisitorsList(GlobalVisitorService globalVisitorService, ScheduleEntity entity, SchedulesService schedulesService){
         this.globalVisitorService = globalVisitorService;
         visitedKids = new LinkedHashMap<>();
         RowWithTxtField group =  new RowWithTxtField("Название группы: ");
         add(group);
-        addBtn = new CustomButton("Добавить группу", new ComponentEventListener<ClickEvent<Button>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Button> event) {
-                List<GlobalVisitor> visitors = globalVisitorService.getRepo().findAllByGroup(group.getFieldText());
-                if(!visitors.isEmpty()){
-                    visitors.forEach(new Consumer<GlobalVisitor>() {
-                        @Override
-                        public void accept(GlobalVisitor globalVisitor) {
-                            Visit visit =  new Visit(entity.getUid(),
-                                    entity.getMasterName(), null, false );
-                            Type type = new TypeToken<List<Visit>>(){}.getType();
-                            List<Visit> existingVisits;
-                            if(globalVisitor.getJsonVisits()!= null && !globalVisitor.getJsonVisits().isEmpty()){
-                                existingVisits = new Gson().fromJson(globalVisitor.getJsonVisits(), type);
-                                existingVisits.add(visit);
-                            }else {
-                                existingVisits = new ArrayList<>();
-                                existingVisits.add(visit);
-                            }
-                            globalVisitor.setJsonVisits(new Gson().toJson(existingVisits));
-                            globalVisitorService.getRepo().save(globalVisitor);
-                        }
-                    });
-                    UI.getCurrent().refreshCurrentRoute(true);
-                }else{
-                    Notify.error("Группа не найдена!");
-                }
+        addBtn = new CustomButton("Добавить группу", (ComponentEventListener<ClickEvent<Button>>) event -> {
+            List<GlobalVisitor> visitors = globalVisitorService.getRepo().findAllByGroup(group.getFieldText());
+            if(!visitors.isEmpty()){
+                visitors.forEach(globalVisitor -> {
+                    Visit visit = new Visit(entity.getUid(),
+                            entity.getMasterName(), null, false, globalVisitor.getId());
+                    Type type = new TypeToken<List<Visit>>() {}.getType();
+                    List<Visit> visitorVisits;
+                    if (globalVisitor.getJsonVisits() != null && !globalVisitor.getJsonVisits().isEmpty()) {
+                        visitorVisits = new Gson().fromJson(globalVisitor.getJsonVisits(), type);
+
+                    } else {
+                        visitorVisits = new ArrayList<>();
+                    }
+                    visitorVisits.add(visit);
+                    globalVisitor.setJsonVisits(new Gson().toJson(visitorVisits));
+                    globalVisitorService.getRepo().save(globalVisitor);
+                    List<Visit> scheduleVisits = new ArrayList<>();;
+                    if (entity.getJsonVisitors() != null && !entity.getJsonVisitors().isEmpty()) {
+                        scheduleVisits = new Gson().fromJson(entity.getJsonVisitors(), type);
+                    }
+
+                    scheduleVisits.add(visit);
+                    entity.setJsonVisitors(new Gson().toJson(scheduleVisits));
+                });
+                schedulesService.getRepo().save(entity);
+                UI.getCurrent().refreshCurrentRoute(true);
+            }else{
+                Notify.error("Группа не найдена!");
             }
         });
         List<GlobalVisitor> visitors = globalVisitorService.getRepo().findAll();
-        visitors.removeIf(new Predicate<GlobalVisitor>() {
-            @Override
-            public boolean test(GlobalVisitor globalVisitor) {
-                Type type = new TypeToken<List<Visit>>(){}.getType();
-                List<Visit> visits = new Gson().fromJson(globalVisitor.getJsonVisits(), type);
-                if (visits == null){
-                    return true;
-                }
-                return visits.stream().noneMatch(new Predicate<Visit>() {
-                    @Override
-                    public boolean test(Visit visit) {
-                        return visit.getScheduleUID().equals(entity.getUid());
-                    }
-                });
+        visitors.removeIf(globalVisitor -> {
+            Type type = new TypeToken<List<Visit>>(){}.getType();
+            List<Visit> visits = new Gson().fromJson(globalVisitor.getJsonVisits(), type);
+            if (visits == null){
+                return true;
             }
+            return visits.stream().noneMatch(visit -> visit.getScheduleUID().equals(entity.getUid()));
         });
         List<PropertyRender<GlobalVisitor, ComponentRenderer<Component,GlobalVisitor>>>
                 renders = new ArrayList<>(RenderLists.GLOBAL_VISITORS_RENDER);
         renders.add(new PropertyRender<>("isVisited", "Присутствие на занятии(да/нет)" ,
-                new CheckBoxColumnRender<>(this, "")));
+                new CheckBoxColumnRender<>(this, ((Object) entity.getUid()))));
 
 
         CustomGrid<GlobalVisitor, ?> visitorsGrid = new CustomGrid<>
                 (GlobalVisitor.class, renders);
         visitorsGrid.setEnabled(!entity.isExecuted());
         visitorsGrid.setItems(visitors);
-        executeSchedule = new CustomButton("Сохранить изменения", (ComponentEventListener<ClickEvent<Button>>) event -> {
+        executeSchedule = new CustomButton("Сохранить изменения",  event -> {
             visitedKids.forEach((s, globalVisitor) -> {
+
                 List<Visit> visits =SerializationUtils.toListVisits(globalVisitor.getJsonVisits());
                 Visit visit = SerializationUtils.findByUid(visits, entity.getUid());
-                visit.setIsVisited(true);
+                        assert visit != null;
+                        visit.setIsVisited(true);
                 visits.set(visits.indexOf(visit),visit);
                 globalVisitor.setJsonVisits(SerializationUtils.toJsonVisits(visits));
 
+                Type type = new TypeToken<List<Visit>>() {}.getType();
+                List<Visit> scheduleVisits = new ArrayList<>();
+                if (entity.getJsonVisitors() != null && !entity.getJsonVisitors().isEmpty()) {
+                    scheduleVisits = new Gson().fromJson(entity.getJsonVisitors(), type);
+                }
+
+                scheduleVisits.forEach(visit1 -> {
+                    if (visit1.getVisitorId() == visit.getVisitorId()){
+                        System.out.println("equals");
+                        visit1.setIsVisited(true);
+                    }
+                });
+                entity.setJsonVisitors(new Gson().toJson(scheduleVisits));
+
+                globalVisitorService.getRepo().save(globalVisitor);
+                schedulesService.getRepo().save(entity);
                 int numOfVisitsYear = globalVisitor.getVisitedSchedulesYear()+1;
                 globalVisitor.setVisitedSchedulesYear(numOfVisitsYear);
 

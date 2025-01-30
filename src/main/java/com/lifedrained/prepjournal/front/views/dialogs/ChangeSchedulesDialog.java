@@ -59,15 +59,12 @@ public class ChangeSchedulesDialog extends BaseDialog<Object> {
 
     @Override
     public void setButtonListeners() {
-        ok.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
-               if(isFieldsEmpty(getDataFromFields())){
-                   return;
-               }
-                close();
-                confirmListener.onConfirm(getDataFromFields());
-            }
+        ok.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
+           if(isFieldsEmpty(getDataFromFields())){
+               return;
+           }
+            close();
+            confirmListener.onConfirm(getDataFromFields());
         });
         deny.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override

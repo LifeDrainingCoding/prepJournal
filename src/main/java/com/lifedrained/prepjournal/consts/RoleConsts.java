@@ -8,9 +8,14 @@ public enum RoleConsts {
          this.value = value;
          switch (value){
              case "ADMIN","ROLE_ADMIN": translation = "Администратор"; break;
-             case "ROLE_USER","USER": translation = "Сотрудник";break;
+             case "USER","ROLE_USER": translation = "Сотрудник";break;
              default:
          }
      }
 
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }
