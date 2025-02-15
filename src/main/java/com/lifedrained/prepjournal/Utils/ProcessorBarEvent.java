@@ -134,7 +134,7 @@ public class ProcessorBarEvent {
                                     entity.setScheduleName((String)returnData.get(0));
                                     entity.setMasterName((String) returnData.get(1));
                                     entity.setDate((Date) returnData.get(2));
-                                    entity.setDuration((int) returnData.get(3));
+                                    entity.setDuration(Integer.parseInt((String) returnData.get(3)));
                                     entity.setTheme((String) returnData.get(4));
                                     schedulesService.getRepo().save(entity);
                                     switcher[0] = turnOffSwitcher(switcher[0]);
