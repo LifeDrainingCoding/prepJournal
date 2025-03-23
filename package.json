@@ -10,9 +10,6 @@
     "@vaadin/react-components": "24.4.7",
     "@vaadin/router": "1.7.5",
     "@vaadin/vaadin-development-mode-detector": "2.0.7",
-    "@vaadin/vaadin-lumo-styles": "24.4.7",
-    "@vaadin/vaadin-material-styles": "24.4.7",
-    "@vaadin/vaadin-themable-mixin": "24.4.7",
     "@vaadin/vaadin-usage-statistics": "2.1.3",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
@@ -50,9 +47,6 @@
       "@vaadin/react-components": "24.4.7",
       "@vaadin/router": "1.7.5",
       "@vaadin/vaadin-development-mode-detector": "2.0.7",
-      "@vaadin/vaadin-lumo-styles": "24.4.7",
-      "@vaadin/vaadin-material-styles": "24.4.7",
-      "@vaadin/vaadin-themable-mixin": "24.4.7",
       "@vaadin/vaadin-usage-statistics": "2.1.3",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
@@ -81,7 +75,7 @@
       "workbox-core": "7.1.0",
       "workbox-precaching": "7.1.0"
     },
-    "hash": "6b2604d60cf53e20ba883b88f9e0f0148dbdb41b43885db3bef3ebba52616a53"
+    "hash": "6d5484cddb5cb84b36359b4c7b13773da856fcde812f0c11d0cd94a74e124a1e"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -97,9 +91,6 @@
     "lit": "$lit",
     "@polymer/polymer": "$@polymer/polymer",
     "react": "$react",
-    "date-fns": "$date-fns",
-    "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
-    "@vaadin/vaadin-lumo-styles": "$@vaadin/vaadin-lumo-styles",
-    "@vaadin/vaadin-material-styles": "$@vaadin/vaadin-material-styles"
+    "date-fns": "$date-fns"
   }
 }

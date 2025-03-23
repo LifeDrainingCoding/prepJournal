@@ -4,9 +4,9 @@ FROM openjdk:21-jdk
 WORKDIR /app
 
 # Копируем jar-файл в контейнер
-COPY target/prepJournal-0.0.1-SNAPSHOT.jar prepJournal-0.0.1-SNAPSHOT.jar
+COPY target/prepJournal-1.0.0.jar prepJournal-1.0.0.jar
 
 # Указываем команду для запуска приложения
-ENTRYPOINT ["java", "-jar", "prepJournal-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "prepJournal-1.0.0.jar"]
 
 EXPOSE 8080

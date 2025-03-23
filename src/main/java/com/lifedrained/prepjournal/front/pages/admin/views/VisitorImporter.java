@@ -44,12 +44,9 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
         buffer = new MultiFileMemoryBuffer();
         upload =  new CustomUploadI18N(buffer);
 
-        upload.addSucceededListener(new ComponentEventListener<SucceededEvent>() {
-            @Override
-            public void onComponentEvent(SucceededEvent event) {
-                String fileName = event.getFileName();
-                processFile(buffer.getInputStream(fileName));
-            }
+        upload.addSucceededListener( event -> {
+            String fileName = event.getFileName();
+            processFile(buffer.getInputStream(fileName));
         });
         setAlignItems(Alignment.STRETCH);
         add(upload);
@@ -59,7 +56,7 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
         InputStreamReader isr = new InputStreamReader(data, StandardCharsets.UTF_8);
 
         CSVParser parser =  new CSVParserBuilder().withErrorLocale(Locale.forLanguageTag("RU"))
-                .withSeparator(',').withIgnoreLeadingWhiteSpace(true)
+                .withSeparator(';').withIgnoreLeadingWhiteSpace(true)
                 .withFieldAsNull( CSVReaderNullFieldIndicator.BOTH).build();
         List<GlobalVisitor> visitors = new ArrayList<>();
         try( CSVReader reader = new CSVReaderBuilder(isr).withCSVParser(parser).build()){
@@ -105,7 +102,7 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
 
             Notify.success("Успешно сохранено");
         }  catch (IOException | CsvException e) {
-            Notify.error("Ошибка при импорте таблицы, проверьте корректность введенных данных либо поставьте разделитель ',' ");
+            Notify.error("Ошибка при импорте таблицы, проверьте корректность введенных данных либо поставьте разделитель ';' ");
             log.error("Ошибка при импорте таблицы: ",e);
         }
 

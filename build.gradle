@@ -36,6 +36,7 @@ ext {
 }
 
 dependencies {
+    implementation 'io.github.natanimn:telebof:0.2.1'
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
