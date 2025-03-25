@@ -1,9 +1,13 @@
 package com.lifedrained.prepjournal.comps;
 
+import com.lifedrained.prepjournal.repo.entities.SubsEntity;
+import com.lifedrained.prepjournal.services.SubsService;
 import io.github.natanimn.BotClient;
 import io.github.natanimn.BotContext;
+import io.github.natanimn.errors.ConnectionError;
 import io.github.natanimn.handlers.CallbackHandler;
 import io.github.natanimn.types.*;
+import jakarta.transaction.Transactional;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,8 +26,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 @Component
 public class Deploy {
@@ -31,18 +37,22 @@ public class Deploy {
     private Environment env;
     private  BotClient client;
     private String url= "no url";
+    private SubsService subsService;
+    private LinkedHashSet<SubsEntity> subs;
 
     //ssh -R 80:localhost:8855 ssh.localhost.run
 
     private static final String key = "tunneled with tls termination,"
             , tokenPath = "static/API_Token" ;
-    public Deploy(Environment env, MessageSource messageSource) {
+    public Deploy(Environment env, SubsService subsService) {
         this.env = env;
+        this.subsService = subsService;
+        subs = subsService.getSubs();
     }
 
 
     @EventListener(ApplicationReadyEvent.class)
-    private void  init(){
+    protected void  initDeploy(){
 
         String port = env.getProperty("server.port");
         log.info("port: {}", port);
@@ -68,7 +78,8 @@ public class Deploy {
                 if (line.contains(key)){
                     url = line.substring(line.indexOf(key)+key.length()).trim();
                     log.warn("founded url " + line);
-                    sendURLAsync(url);
+                    sendURLAsync();
+                    sendNotsToSubAsync();
                     break;
                 }
                 if (System.currentTimeMillis()- startTime > Duration.ofMinutes(1).toMillis()){
@@ -85,7 +96,8 @@ public class Deploy {
                         if (s.contains(key)){
                             url = s.substring(s.indexOf(key)+key.length()).trim();
                             log.warn("updated url {}" , s);
-                            sendURL(url);
+                            sendURL();
+                            sendNotsToSub();
                         }
                     }
                 } catch (  IOException e) {
@@ -100,7 +112,7 @@ public class Deploy {
 
     }
 
-    private void sendURL(String url){
+    private void sendURL(){
         ClassPathResource resource = new ClassPathResource("static/OwnerTG_ID");
         try {
             InputStream in = resource.getInputStream();
@@ -110,7 +122,9 @@ public class Deploy {
                     .replyMarkup(new InlineKeyboardMarkup(
                             new InlineKeyboardButton[]{
                                     new InlineKeyboardButton("Получить ссылку")
-                                            .callbackData("get")
+                                            .callbackData("get"),
+                                    new InlineKeyboardButton("Подписаться на рассылку ссылок").callbackData("sub"),
+                                    new InlineKeyboardButton("Отписаться от рассылки ссылок").callbackData("unsub")
 
                             })).exec();
         }catch (IOException ex){
@@ -118,11 +132,23 @@ public class Deploy {
         }
         log.info("message sent");
     }
-    private void sendURLAsync(String url){
-        new Thread(() -> {
-            sendURL(url);
-        }).start();
+
+    private void sendURL(String tgId){
+        client.context.sendMessage(tgId, url)
+                .replyMarkup(new InlineKeyboardMarkup(
+                        new InlineKeyboardButton[]{
+                                new InlineKeyboardButton("Получить ссылку")
+                                        .callbackData("get"),
+                                new InlineKeyboardButton("Подписаться на рассылку ссылок").callbackData("sub"),
+                                new InlineKeyboardButton("Отписаться от рассылки ссылок").callbackData("unsub")
+
+                        })).exec();
     }
+    private void sendURLAsync(){
+        new Thread(this::sendURL).start();
+    }
+
+
     private void finishBot(){
         client.stop();
         client.deleteWebhook();
@@ -154,15 +180,34 @@ public class Deploy {
                 sendMsgContext(context);
 
             }));
-            client.onCallback(new CallbackHandler() {
-                @Override
-                public void handle(BotContext context, CallbackQuery callbackQuery) {
-                   switch (callbackQuery.data){
-                       case "get": sendMsgContext(context);
-                   }
+
+            client.onMessage(filter -> filter.commands("sub"),(context, message) -> {
+                subUser(message.from.id);
+                context.reply("Подписка оформлена").exec();
+            });
+
+            client.onMessage(filter -> filter.commands("unsub"),(context, message) -> {
+                unsubUser(message.from.id);
+                context.reply("Подписка отменена").exec();
+            });
+            client.onCallback((context, callbackQuery) -> {
+                switch (callbackQuery.data){
+                    case "get" ->sendMsgContext(context);
+                    case "sub" ->{
+                        subUser(callbackQuery.from.id) ;
+                        context.reply("Подписка оформлена").exec();
+                    }
+                    case "unsub" ->{
+                        unsubUser(callbackQuery.from.id);
+                        context.reply("Подписка отменена").exec();
+                    }
                 }
             });
-            client.run();
+            try {
+                client.run();
+            }catch (ConnectionError ex){
+                setListener();
+            }
         }).start();
 
 
@@ -172,8 +217,29 @@ public class Deploy {
                 .replyMarkup(new InlineKeyboardMarkup(
                         new InlineKeyboardButton[]{
                                 new InlineKeyboardButton("Получить ссылку")
-                                        .callbackData("get")
-
+                                        .callbackData("get"),
+                                new InlineKeyboardButton("Подписаться на рассылку ссылок").callbackData("sub"),
+                                new InlineKeyboardButton("Отписаться от рассылки ссылок").callbackData("unsub")
                         })).exec();
+    }
+
+    protected void subUser(long userId){
+        SubsEntity subsEntity = new SubsEntity(userId);
+        subsService.uploadSub(subsEntity);
+    }
+
+    protected void unsubUser(long userId){
+        subsService.deleteSub(userId);
+    }
+
+    protected void sendNotsToSub(){
+        subs = subsService.getSubs();
+        subs.forEach(subsEntity -> {
+            sendURL(String.valueOf(subsEntity.userId));
+        });
+
+    }
+    private void sendNotsToSubAsync(){
+        new Thread(this::sendNotsToSub).start();
     }
 }
