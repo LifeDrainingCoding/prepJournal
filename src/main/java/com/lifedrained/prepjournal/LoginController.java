@@ -1,13 +1,16 @@
 package com.lifedrained.prepjournal;
 
+import jakarta.annotation.security.PermitAll;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import org.springframework.stereotype.Controller;
 
-@org.springframework.stereotype.Controller
+
+@Controller
 @AllArgsConstructor
-public class Controller {
+public class LoginController {
     @GetMapping("/welcome")
     public String welcome(){
         return "Welcome page";
@@ -17,4 +20,10 @@ public class Controller {
     public String users(){
         return "users page";
     }
+
+//    @GetMapping("/login")
+//    @PermitAll
+//    public String login(){
+//        return "forward:/login.html";
+//    }
 }

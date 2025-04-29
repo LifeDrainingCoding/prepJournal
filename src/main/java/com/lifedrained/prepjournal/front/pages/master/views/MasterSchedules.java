@@ -4,16 +4,15 @@ import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.Utils.DateUtils;
 import com.lifedrained.prepjournal.Utils.JSUtils;
 import com.lifedrained.prepjournal.Utils.OnCheckedEntityHandler;
-import com.lifedrained.prepjournal.consts.Ids;
-import com.lifedrained.prepjournal.consts.RenderLists;
-import com.lifedrained.prepjournal.consts.Routes;
-import com.lifedrained.prepjournal.consts.StringConsts;
+import com.lifedrained.prepjournal.consts.*;
 import com.lifedrained.prepjournal.front.interfaces.CRUDControl;
 import com.lifedrained.prepjournal.front.interfaces.OnCheckedListener;
 import com.lifedrained.prepjournal.front.interfaces.OnConfirmDialogListener;
 import com.lifedrained.prepjournal.front.views.ControlButtons;
 import com.lifedrained.prepjournal.front.views.dialogs.ChangeSchedulesDialog;
 import com.lifedrained.prepjournal.front.views.widgets.CustomGrid;
+import com.lifedrained.prepjournal.repo.LoginRepo;
+import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 import com.lifedrained.prepjournal.services.SchedulesService;
 import com.vaadin.flow.component.Component;
@@ -31,12 +30,14 @@ public class MasterSchedules extends TabSheet implements OnCheckedListener<Sched
     private final CurrentSession session;
     private final SchedulesService service;
     private final ControlButtons<ScheduleEntity> scheduleBar;
+    private final LoginRepo loginRepo;
 
     private final LinkedHashMap<String, ScheduleEntity> selectedSchedules;
 
-    public MasterSchedules(CurrentSession session, SchedulesService service) {
+    public MasterSchedules(CurrentSession session, SchedulesService service, LoginRepo loginRepo) {
         super();
 
+        this.loginRepo = loginRepo;
         this.session = session;
         this.service = service;
         selectedSchedules =  new LinkedHashMap<>();
@@ -91,14 +92,15 @@ public class MasterSchedules extends TabSheet implements OnCheckedListener<Sched
                 @Override
                 public void onConfirm(List<Object> returnData) {
                     entity.setScheduleName((String)returnData.get(0));
-                    entity.setMasterName((String) returnData.get(1));
+                    entity.setMasterName( ((LoginEntity) returnData.get(1)).getName());
                     entity.setDate((Date) returnData.get(2));
                     entity.setDuration((int) returnData.get(3));
                     entity.setTheme((String) returnData.get(4));
+                    entity.setMasterUid(session.getUid());
                     service.getRepo().save(entity);
                     switcher[0] = turnOffSwitcher(switcher[0]);
                 }
-            },List.of(entity.getScheduleName(), entity.getMasterName(),
+            },List.of(entity.getScheduleName(), List.of(session.getEntity()),
                     DateUtils.getStringFromDateTime(entity.getDate()),
                     String.valueOf(entity.getDuration()),
                     entity.getTheme()), session);
@@ -113,14 +115,15 @@ public class MasterSchedules extends TabSheet implements OnCheckedListener<Sched
             public void onConfirm(List<Object> data) {
                 ScheduleEntity entity = new ScheduleEntity();
                 entity.setScheduleName((String) data.get(0));
-                entity.setMasterName((String) data.get(1));
+                entity.setMasterName(((LoginEntity) data.get(1)).getName());
                 entity.setDate((Date) data.get(2));
                 entity.setDuration(Integer.parseInt((String) data.get(3)));
                 entity.setTheme((String) data.get(4));
+                entity.setMasterUid(session.getUid());
                 service.getRepo().save(entity);
                 refresh();
             }
-        },  StringConsts.SchedulesFieldNames, session);
+        }, StrConsts.getScheduleFieldValues(List.of(session.getEntity())), session);
         scheludesDialog.open();
     }
     private void refresh(){

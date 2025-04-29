@@ -19,7 +19,6 @@ import java.util.List;
 public class ChangeGlobalVisitorDialog extends  BaseDialog<Object>{
     private static final Logger log = LogManager.getLogger(ChangeGlobalVisitorDialog.class);
     private final RowWithTxtField name, group, linkedMasterName, speciality, notes;
-    private RowWithIntField visitedSchedulesN;
     private final RowDatePicker birthDateField;
     private int age;
 
@@ -43,29 +42,12 @@ public class ChangeGlobalVisitorDialog extends  BaseDialog<Object>{
         linkedMasterName =  new RowWithTxtField((String) fieldValues.get(3) );
         speciality = new RowWithTxtField((String) fieldValues.get(4));
         group =  new RowWithTxtField((String) fieldValues.get(5));
-        Object numOfVisits = fieldValues.get(6);
 
-        switch (numOfVisits) {
-            case null -> {
-                visitedSchedulesN = new RowWithIntField("ОШИБКА ПРИ ПОЛУЧЕНИИ КОЛ-ВА ПОСЕЩЕННЫХ ЗАНЯТИЙ, СООБЩИТЕ АДМИНИСТРАЦИИ!");
-                log.error("Количество посещенных занятий нулл");
-            }
-            case Integer visitsNum -> {
-                visitedSchedulesN = new RowWithIntField("Кол-во посещенных занятий за учебный год: " + visitsNum);
-                visitedSchedulesN.setValue(visitsNum);
-            }
-            case String visitsName -> {
-                visitedSchedulesN = new RowWithIntField(visitsName);
-                visitedSchedulesN.setValue(0);
-            }
-            default -> {
-                log.error("кол-во посещенных занятий не число и не строка {}", numOfVisits.toString());
-            }
-        }
-        notes =  new RowWithTxtField((String) fieldValues.get(7));
+
+        notes =  new RowWithTxtField((String) fieldValues.get(6));
 
         getHeader().add(new VerticalLayout(name, birthDateField, linkedMasterName,
-                speciality,group, visitedSchedulesN, notes));
+                speciality,group, notes));
     }
 
     @Override
@@ -77,7 +59,7 @@ public class ChangeGlobalVisitorDialog extends  BaseDialog<Object>{
 
         return List.of(name.getFieldText(),birthDate,
                 age , linkedMasterName.getFieldText(),
-                speciality.getFieldText(),group.getFieldText(), visitedSchedulesN.getValue(),
+                speciality.getFieldText(),group.getFieldText(),
                 notes.getFieldText());
     }
 

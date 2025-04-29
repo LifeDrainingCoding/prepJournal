@@ -6,6 +6,7 @@ import com.lifedrained.prepjournal.consts.RoleConsts;
 import com.lifedrained.prepjournal.consts.Routes;
 import com.lifedrained.prepjournal.front.pages.scheduledetails.views.BackBtn;
 import com.lifedrained.prepjournal.front.pages.scheduledetails.views.ScheduleTabSheetView;
+import com.lifedrained.prepjournal.repo.LoginRepo;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 import com.lifedrained.prepjournal.services.GlobalVisitorService;
 import com.lifedrained.prepjournal.services.SchedulesService;
@@ -26,8 +27,10 @@ public class ScheduleDetailsPage extends VerticalLayout implements HasUrlParamet
     private SchedulesService service;
     private CurrentSession session;
     private final GlobalVisitorService globalVisitorService;
+    private final LoginRepo loginRepo;
     public ScheduleDetailsPage(CurrentSession session, SchedulesService service,
-                               GlobalVisitorService globalVisitorService){
+                               GlobalVisitorService globalVisitorService, LoginRepo loginRepo){
+        this.loginRepo = loginRepo;
        this.service = service;
        this.session = session;
        this.globalVisitorService = globalVisitorService;
@@ -44,7 +47,7 @@ public class ScheduleDetailsPage extends VerticalLayout implements HasUrlParamet
         }
         setAlignItems(Alignment.CENTER);
         ScheduleTabSheetView scheduleTabSheetView = new ScheduleTabSheetView(service,schedule, session,
-                globalVisitorService);
+                globalVisitorService,loginRepo);
         Span span = new Span("UID занятия: "+schedule.getUid()){{
             setWidthFull();
         }};

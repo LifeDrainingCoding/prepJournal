@@ -1,7 +1,7 @@
 package com.lifedrained.prepjournal.consts;
 
 public enum RoleConsts {
-      ADMIN ("ADMIN"),ADMIN1("ROLE_ADMIN") , USER("ROLE_USER") , USER1("USER");
+      ADMIN ("ADMIN"),ADMIN1("ROLE_ADMIN") , USER1("ROLE_USER") , USER("USER");
       public final String value;
       public String translation;
      RoleConsts(String value){

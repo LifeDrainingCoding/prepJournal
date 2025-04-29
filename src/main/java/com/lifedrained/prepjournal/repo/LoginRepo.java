@@ -17,6 +17,7 @@ public interface LoginRepo extends JpaRepository<LoginEntity, Long> {
 
     Optional<LoginEntity> findByIdOrderById(Long aLong);
     Optional<LoginEntity> findByLogin(String login);
+    Optional<LoginEntity> findByUid(String uid);
     Optional<LoginEntity> findByName(String name);
     List<LoginEntity> findAllByRoleOrRole(String role, String role2);
 

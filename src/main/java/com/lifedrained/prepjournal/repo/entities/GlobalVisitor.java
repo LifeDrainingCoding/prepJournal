@@ -17,7 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class GlobalVisitor extends BaseEntity implements Serializable {
 
-    public final static int PARAMS_LENGTH = 7;
+    public final static int PARAMS_LENGTH = 6;
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -42,8 +42,6 @@ public class GlobalVisitor extends BaseEntity implements Serializable {
     @Column(name = "groups", nullable = false)
     private String group;
 
-    @Column(name = "visited_schedules_year", nullable = false)
-    private int visitedSchedulesYear;
 
     @Column(name = "notes")
     private String notes;
@@ -53,14 +51,13 @@ public class GlobalVisitor extends BaseEntity implements Serializable {
 
     public GlobalVisitor(String name, Date birthDate, int age,
                          String linkedMasterName, String speciality, String group,
-                         int visitedSchedulesYear, String notes) {
+                          String notes) {
         this.name = name;
         this.birthDate = birthDate;
         this.age = age;
         this.linkedMasterName = linkedMasterName;
         this.speciality = speciality;
         this.group = group;
-        this.visitedSchedulesYear = visitedSchedulesYear;
         this.notes = notes;
     }
 

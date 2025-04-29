@@ -75,16 +75,6 @@ public class SearchEngine<ENTITY extends BaseEntity,TYPE extends Enum<TYPE>> {
                                 case BY_SPECIALITY -> visitors.removeIf(visitor ->
                                         compareStrings(visitor.getSpeciality(), value));
 
-                                case BY_VISITS_NUM -> visitors.removeIf(visitor -> {
-                                    try {
-                                        int visitsNum = Integer.parseInt((String) value);
-                                        return visitor.getVisitedSchedulesYear() != visitsNum;
-
-                                    } catch (ClassCastException ex) {
-                                        log.error(ex);
-                                        return false;
-                                    }
-                                });
 
                                 case BY_MASTER_NAME -> visitors.removeIf(visitor ->
                                         compareStrings(visitor.getLinkedMasterName(), value));

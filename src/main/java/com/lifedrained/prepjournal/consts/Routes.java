@@ -5,4 +5,5 @@ public interface Routes {
     String SCHEDULE_DETAILS = "/scheduleDetails";
     String MASTER_PAGE = "/master";
     String STATISTICS_PAGE = "/statistics";
+    String LOGIN_PAGE = "/login";
 }

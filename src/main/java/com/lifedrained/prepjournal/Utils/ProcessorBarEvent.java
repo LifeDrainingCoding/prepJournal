@@ -1,6 +1,8 @@
 package com.lifedrained.prepjournal.Utils;
 
 import com.lifedrained.prepjournal.comps.CurrentSession;
+import com.lifedrained.prepjournal.consts.RoleConsts;
+import com.lifedrained.prepjournal.consts.StrConsts;
 import com.lifedrained.prepjournal.events.EventType;
 import com.lifedrained.prepjournal.consts.Ids;
 import com.lifedrained.prepjournal.consts.StringConsts;
@@ -62,13 +64,14 @@ public class ProcessorBarEvent {
                         ChangeSchedulesDialog scheludesDialog =  new ChangeSchedulesDialog(data -> {
                             ScheduleEntity entity = new ScheduleEntity();
                             entity.setScheduleName((String) data.get(0));
-                            entity.setMasterName((String) data.get(1));
+                            entity.setMasterName(((LoginEntity) data.get(1)).getName());
                             entity.setDate((Date) data.get(2));
                             entity.setDuration(Integer.parseInt((String) data.get(3)));
                             entity.setTheme((String) data.get(4));
+                            entity.setMasterUid(((LoginEntity) data.get(1)).getUid());
                             schedulesService.getRepo().save(entity);
                             refresh();
-                        },  StringConsts.SchedulesFieldNames,session);
+                        }, StrConsts.getScheduleFieldValues(loginRepo.findAll()),session);
                         scheludesDialog.open();
                     }
                     case Ids.VISITORS_BAR -> {
@@ -81,8 +84,7 @@ public class ProcessorBarEvent {
                                 GlobalVisitor visitor = new GlobalVisitor((String) returnData.get(0),
                                         (Date) returnData.get(1), ((int) returnData.get(2)),
                                         (String) returnData.get(3), (String) returnData.get(4),
-                                        group,(int) returnData.get(6),
-                                        (String) returnData.get(7));
+                                        group, (String) returnData.get(6));
                                 globalVisitorService.getRepo().save(visitor);
 
                                 if (!groupsRepo.existsByGroup(group)){
@@ -117,9 +119,8 @@ public class ProcessorBarEvent {
                                     entity.setName(data.get(3));
                                     loginRepo.save(entity);
                                     switcher[0] = turnOffSwitcher(switcher[0]);
-
                                 }
-                            }, List.of(entity.getName(), entity.getLogin(),entity.getPassword(), entity.getRole()));
+                            }, List.of(entity.getName(), entity.getLogin(),entity.getPassword(), RoleConsts.valueOf(entity.getRole()).translation));
                             dialog.open();
 
                         }
@@ -128,18 +129,16 @@ public class ProcessorBarEvent {
                         Iterator<ScheduleEntity> iterator = (Iterator<ScheduleEntity>) iterators.get(0);
                         while (iterator.hasNext()){
                             ScheduleEntity entity = iterator.next();
-                            ChangeSchedulesDialog  schedulesDialog = new ChangeSchedulesDialog(new OnConfirmDialogListener<Object>() {
-                                @Override
-                                public void onConfirm(List<Object> returnData) {
-                                    entity.setScheduleName((String)returnData.get(0));
-                                    entity.setMasterName((String) returnData.get(1));
-                                    entity.setDate((Date) returnData.get(2));
-                                    entity.setDuration(Integer.parseInt((String) returnData.get(3)));
-                                    entity.setTheme((String) returnData.get(4));
-                                    schedulesService.getRepo().save(entity);
-                                    switcher[0] = turnOffSwitcher(switcher[0]);
-                                }
-                            },List.of(entity.getScheduleName(), entity.getMasterName(),
+                            ChangeSchedulesDialog  schedulesDialog = new ChangeSchedulesDialog(returnData -> {
+                                entity.setScheduleName((String)returnData.get(0));
+                                entity.setMasterName(((LoginEntity) returnData.get(1)).getName());
+                                entity.setDate((Date) returnData.get(2));
+                                entity.setDuration(Integer.parseInt((String) returnData.get(3)));
+                                entity.setTheme((String) returnData.get(4));
+                                entity.setMasterUid(((LoginEntity) returnData.get(1)).getUid());
+                                schedulesService.getRepo().save(entity);
+                                switcher[0] = turnOffSwitcher(switcher[0]);
+                            },List.of(entity.getScheduleName(), List.of(loginRepo.findByUid(entity.getMasterUid()).get()),
                                     DateUtils.getStringFromDateTime(entity.getDate()),
                                     String.valueOf(entity.getDuration()),
                                   entity.getTheme()), session);
@@ -160,8 +159,7 @@ public class ProcessorBarEvent {
                                     globalVisitor.setLinkedMasterName((String) returnData.get(3));
                                     globalVisitor.setSpeciality((String) returnData.get(4));
                                     globalVisitor.setGroup((group));
-                                    globalVisitor.setVisitedSchedulesYear((int)returnData.get(6));
-                                    globalVisitor.setNotes((String)returnData.get(7));
+                                    globalVisitor.setNotes((String)returnData.get(6));
                                     globalVisitorService.getRepo().save(globalVisitor);
                                     if (!groupsRepo.existsByGroup(group)){
                                         GroupEntity groupEntity = new GroupEntity();

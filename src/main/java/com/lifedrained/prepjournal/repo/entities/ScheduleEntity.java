@@ -57,12 +57,16 @@ public class ScheduleEntity extends BaseEntity  {
     @Column(name= "schedule_UID", nullable = false, unique = true)
     private String uid;
 
+    @Column(name = "master_uid", nullable = false)
+    private String masterUid;
 
 
-    public ScheduleEntity(String scheduleName, String masterName,Date date ,int durationMins){
+
+    public ScheduleEntity(String scheduleName, String masterName,Date date ,int durationMins,String masterUid){
         this.scheduleName = scheduleName;
         this.date = date;
         this.masterName = masterName;
+        this.masterUid = masterUid;
         duration = durationMins;
         uid = KeyGen.generateKey();
     }

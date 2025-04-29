@@ -3,10 +3,13 @@ package com.lifedrained.prepjournal.front.views.dialogs;
 import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.Utils.DateUtils;
 import com.lifedrained.prepjournal.Utils.Notify;
+import com.lifedrained.prepjournal.front.views.filters.EntityFilters;
 import com.lifedrained.prepjournal.consts.RoleConsts;
 import com.lifedrained.prepjournal.front.interfaces.OnConfirmDialogListener;
 import com.lifedrained.prepjournal.front.views.widgets.RowDateTimePicker;
+import com.lifedrained.prepjournal.front.views.widgets.RowWithComboBox;
 import com.lifedrained.prepjournal.front.views.widgets.RowWithTxtField;
+import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -18,7 +21,8 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class ChangeSchedulesDialog extends BaseDialog<Object> {
-    private RowWithTxtField scheduleName, masterName, duration, theme , description;
+    private RowWithTxtField scheduleName,  duration, theme ;
+    private RowWithComboBox<LoginEntity> masterName;
     private RowDateTimePicker datePicker;
 
     private final CurrentSession session;
@@ -32,7 +36,8 @@ public class ChangeSchedulesDialog extends BaseDialog<Object> {
         scheduleName =  new RowWithTxtField(((String) fieldValues.get(0))){{
             setLabelWidth("200px");
         }};
-        masterName =  new RowWithTxtField(((String) fieldValues.get(1))){{
+        masterName =  new RowWithComboBox<>("Выберите преподавателя", ((List<LoginEntity>) fieldValues.get(1)),
+                LoginEntity::getName, EntityFilters.LOGIN.get()){{
             setLabelWidth("200px");
         }};
         datePicker = new RowDateTimePicker("Измените дату если нужно: ");
@@ -80,9 +85,9 @@ public class ChangeSchedulesDialog extends BaseDialog<Object> {
             return new ArrayList<>(){{
                 add(scheduleName.getFieldText());
                 if (session.getRole().equals(RoleConsts.ADMIN.value)){
-                    add(masterName.getFieldText());
+                    add(masterName.getCBoxValue());
                 }else {
-                    add(session.getEntity().getName());
+                    add(session.getEntity());
                 }
                 add("null");
                 add(duration.getFieldText());
@@ -92,9 +97,9 @@ public class ChangeSchedulesDialog extends BaseDialog<Object> {
         return new ArrayList<>(){{
             add(scheduleName.getFieldText());
             if (session.getRole().equals(RoleConsts.ADMIN.value)){
-                add(masterName.getFieldText());
+                add(masterName.getCBoxValue());
             }else {
-                add(session.getEntity().getName());
+                add(session.getEntity());
             }
             add(DateUtils.asDate(datePicker.getDateTimePicker().getValue()));
             add(duration.getFieldText());

@@ -14,12 +14,12 @@ import java.util.Locale;
 @Setter
 @AllArgsConstructor
 @Entity
-@Table( name="USERS", schema = "APP")
+@Table( name="users", schema = "app")
 public class LoginEntity extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY )
-    @Column(name = "ID", nullable = false)
-    private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    protected Long id;
 
     @Column (name ="login" , nullable = false)
     private String login;
@@ -33,7 +33,7 @@ public class LoginEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "UID", nullable = false)
+    @Column(name = "uid", nullable = false)
     private String uid;
 
     public LoginEntity() {

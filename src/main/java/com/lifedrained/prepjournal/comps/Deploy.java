@@ -61,10 +61,12 @@ public class Deploy {
             return;
         }
         String command = "ssh";
-        String[] args = new String[]{"-R","80:localhost:"+port , "ssh.localhost.run",};
+        String[] args = new String[]{"-t", "-o" ,"StrictHostKeyChecking=no","-R" ,"80:localhost:"+port , "ssh.localhost.run",};
+
         List<String> exec = new ArrayList<>(Arrays.stream(args).toList());
         exec.addFirst(command);
         ProcessBuilder pb = new ProcessBuilder(exec );
+        pb.redirectErrorStream(true );
         long startTime = System.currentTimeMillis();
         System.out.println(System.getenv("PATH"));
         pb.environment().put("PATH", System.getenv("PATH"));
@@ -215,11 +217,19 @@ public class Deploy {
     private void sendMsgContext(BotContext context){
         context.sendMessage( url)
                 .replyMarkup(new InlineKeyboardMarkup(
-                        new InlineKeyboardButton[]{
-                                new InlineKeyboardButton("Получить ссылку")
-                                        .callbackData("get"),
-                                new InlineKeyboardButton("Подписаться на рассылку ссылок").callbackData("sub"),
-                                new InlineKeyboardButton("Отписаться от рассылки ссылок").callbackData("unsub")
+                        new InlineKeyboardButton[][]{
+                                new InlineKeyboardButton[]{
+                                        new InlineKeyboardButton("Получить ссылку")
+                                                .callbackData("get")
+                                },
+                                new InlineKeyboardButton[]{
+                                        new InlineKeyboardButton("Подписаться на рассылку ссылок")
+                                                .callbackData("sub")
+                                },
+                                new InlineKeyboardButton[]{
+                                        new InlineKeyboardButton("Отписаться от рассылки ссылок")
+                                                .callbackData("unsub")
+                                }
                         })).exec();
     }
 

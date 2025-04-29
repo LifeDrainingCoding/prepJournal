@@ -2,6 +2,7 @@ package com.lifedrained.prepjournal.front.pages.scheduledetails.views;
 import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.Utils.Notify;
 import com.lifedrained.prepjournal.front.views.widgets.CustomTextEditor;
+import com.lifedrained.prepjournal.repo.LoginRepo;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 import com.lifedrained.prepjournal.services.GlobalVisitorService;
 import com.lifedrained.prepjournal.services.SchedulesService;
@@ -19,9 +20,12 @@ public class ScheduleTabSheetView extends TabSheet implements ComponentEventList
     private ScheduleEntity entity;
     private final CurrentSession session;
     private final GlobalVisitorService globalVisitorService;
+    private final LoginRepo loginRepo;
 
     private Button saveDescriptionBtn;
-    public ScheduleTabSheetView(SchedulesService service, ScheduleEntity entity, CurrentSession session, GlobalVisitorService globalVisitorService){
+    public ScheduleTabSheetView(SchedulesService service, ScheduleEntity entity, CurrentSession session, GlobalVisitorService globalVisitorService
+                                , LoginRepo loginRepo){
+        this.loginRepo = loginRepo;
         this.globalVisitorService = globalVisitorService;
         this.service = service;
         this.entity = entity;
@@ -67,7 +71,7 @@ public class ScheduleTabSheetView extends TabSheet implements ComponentEventList
 
 
         Tab otherParamsTab = new Tab("Другие параметры занятия");
-        OtherScheduleParams otherScheduleParams = new OtherScheduleParams(service,entity,session);
+        OtherScheduleParams otherScheduleParams = new OtherScheduleParams(service,entity,session, loginRepo);
         add(otherParamsTab,otherScheduleParams);
 
 

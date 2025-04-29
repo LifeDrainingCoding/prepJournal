@@ -34,8 +34,6 @@ public interface RenderLists {
             new PropertyRender<>("linkedMasterName", "ФИО Педагога"),
             new PropertyRender<>("speciality", "Направление"),
             new PropertyRender<>("group","Группа"),
-            new PropertyRender<>("visitedSchedulesYear",
-                    "Кол-во посещенных занятий с начала обучения в текущем учебном году"),
             new PropertyRender<>("notes","Примечания")
             );
     List<PropertyRender<StatItem, ComponentRenderer<Component, StatItem>>> STATS_RENDER = List.of(

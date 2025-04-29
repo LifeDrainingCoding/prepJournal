@@ -118,8 +118,6 @@ public class VisitorsList extends VerticalLayout implements OnCheckedListener<Gl
 
                 globalVisitorService.getRepo().save(globalVisitor);
                 schedulesService.getRepo().save(entity);
-                int numOfVisitsYear = globalVisitor.getVisitedSchedulesYear()+1;
-                globalVisitor.setVisitedSchedulesYear(numOfVisitsYear);
 
 
             }
