@@ -24,7 +24,7 @@ public interface SearchTypes {
 
    enum VISITOR_TYPE{
        BY_NAME(1), BY_DATE(2), BY_AGE(3), BY_MASTER_NAME(4),
-       BY_SPECIALITY(5), BY_GROUP(6), BY_VISITS_NUM(7), BY_NOTES(8);
+       BY_SPECIALITY(5), BY_GROUP(6), BY_NOTES(7);
 
        public final int value;
        public final String string;
@@ -38,8 +38,7 @@ public interface SearchTypes {
                case 4 -> string = "По Фамилии/Имени/Отчеству/ФИО Педагога:";
                case 5 -> string = "По направлению:";
                case 6 -> string = "По группе:";
-               case 7 -> string = "По кол-ву посещений в этом учебном году:";
-               case 8 -> string = "По примечанию:";
+               case 7 -> string = "По примечанию:";
                default -> string = null;
            }
        }

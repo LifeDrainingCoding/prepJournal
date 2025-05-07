@@ -12,4 +12,5 @@ import lombok.Setter;
 public class SearchField<TYPE extends Enum<TYPE>> {
     private Enum<TYPE> type;
     private TextField textField;
+    
 }

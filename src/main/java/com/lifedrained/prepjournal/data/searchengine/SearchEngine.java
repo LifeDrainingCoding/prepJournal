@@ -49,6 +49,9 @@ public class SearchEngine<ENTITY extends BaseEntity,TYPE extends Enum<TYPE>> {
                             switch (typeEnum) {
                                 case BY_AGE -> visitors.removeIf(visitor -> {
                                     try {
+                                        if ( ((String) value).isEmpty()){
+                                            return false;
+                                        }
                                         int age = Integer.parseInt((String) value);
                                         return visitor.getAge() != age;
 
@@ -81,8 +84,9 @@ public class SearchEngine<ENTITY extends BaseEntity,TYPE extends Enum<TYPE>> {
                                 default -> throw new IllegalStateException("Unexpected value: " + typeEnum);
                             }
                             log.info("searched visitors size {}", visitors.size());
-                            listener.onSearchEvent((SearchEvent<ENTITY>) new SearchEvent<>(visitors));
+
                         });
+                        listener.onSearchEvent((SearchEvent<ENTITY>) new SearchEvent<>(visitors));
                     } catch (ClassCastException ex) {
                         log.error("error casting list to one of list entities: ", ex);
                     }

@@ -78,4 +78,10 @@ public class DateUtils {
         }
         return "";
     }
+    public static LocalDate getLDFromString(String stringDate) throws DateTimeParseException {
+        return LocalDate.parse(stringDate, DateTimeFormatter.ofPattern(LD_FORMAT));
+    }
+    public static LocalTime getTimeFromString(String stringTime) throws DateTimeParseException {
+        return LocalTime.parse(stringTime, DateTimeFormatter.ofPattern(LT_FORMAT));
+    }
 }

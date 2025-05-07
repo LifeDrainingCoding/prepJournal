@@ -1,0 +1,17 @@
+{
+  "frontendFolder": "D:/Projects/prepJournal/./src/main/frontend",
+  "themeFolder": "themes",
+  "themeResourceFolder": "D:/Projects/prepJournal/./src/main/frontend/generated/jar-resources",
+  "staticOutput": "D:/Projects/prepJournal/target/classes/META-INF/VAADIN/webapp/VAADIN/static",
+  "generatedFolder": "generated",
+  "statsOutput": "D:\\Projects\\prepJournal\\target\\classes\\META-INF\\VAADIN\\config",
+  "frontendBundleOutput": "D:\\Projects\\prepJournal\\target\\classes\\META-INF\\VAADIN\\webapp",
+  "devBundleOutput": "D:/Projects/prepJournal/target/dev-bundle/webapp",
+  "devBundleStatsOutput": "D:/Projects/prepJournal/target/dev-bundle/config",
+  "jarResourcesFolder": "D:/Projects/prepJournal/./src/main/frontend/generated/jar-resources",
+  "themeName": "",
+  "clientServiceWorkerSource": "D:\\Projects\\prepJournal\\target\\sw.ts",
+  "pwaEnabled": false,
+  "offlineEnabled": false,
+  "offlinePath": "'offline.html'"
+}

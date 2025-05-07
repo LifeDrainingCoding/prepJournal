@@ -138,7 +138,7 @@ public class ProcessorBarEvent {
                                 entity.setMasterUid(((LoginEntity) returnData.get(1)).getUid());
                                 schedulesService.getRepo().save(entity);
                                 switcher[0] = turnOffSwitcher(switcher[0]);
-                            },List.of(entity.getScheduleName(), List.of(loginRepo.findByUid(entity.getMasterUid()).get()),
+                            },List.of(entity.getScheduleName(), loginRepo.findAll(),
                                     DateUtils.getStringFromDateTime(entity.getDate()),
                                     String.valueOf(entity.getDuration()),
                                   entity.getTheme()), session);

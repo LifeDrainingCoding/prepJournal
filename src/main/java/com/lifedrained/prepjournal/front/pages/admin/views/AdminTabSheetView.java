@@ -181,6 +181,10 @@ public class AdminTabSheetView extends TabSheet implements
         VisitorImporter importer = new VisitorImporter(globalVisitorService, groupsRepo);
         add(visitorImport, importer);
 
+        Tab visitorExport = new Tab("Экспорт обучающихся");
+        VisitorExporter exporter = new VisitorExporter(globalVisitorService);
+        add(visitorExport, exporter);
+
         addSelectedChangeListener(this);
     }
 

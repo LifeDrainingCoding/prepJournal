@@ -38,7 +38,7 @@ ext {
 dependencies {
     // https://mvnrepository.com/artifact/org.apache.poi/poi
     implementation 'org.apache.poi:poi:5.4.1'
-    implementation 'io.github.natanimn:telebof:0.2.1'
+    implementation 'io.github.natanimn:telebof:0.3.0'
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
@@ -64,7 +64,7 @@ dependencies {
     implementation 'org.springframework.integration:spring-integration-mail'
     implementation 'org.apache.poi:poi-ooxml:5.4.1'
     // https://mvnrepository.com/artifact/org.springframework.security/spring-security-core
-    implementation 'org.springframework.security:spring-security-core:6.3.3'
+    implementation fileTree('/libs')
     implementation 'org.hibernate.orm:hibernate-core:6.6.0.Final'
     implementation 'org.springframework.shell:spring-shell-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'

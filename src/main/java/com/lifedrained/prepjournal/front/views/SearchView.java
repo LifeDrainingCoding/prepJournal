@@ -61,7 +61,7 @@ public class SearchView<ENTITY extends BaseEntity, TYPE extends Enum<TYPE>> exte
         add(horizontalLayout);
 
         searchBtn.addClickListener((ComponentEventListener<ClickEvent<Button>>) event -> {
-            new SearchEngine<ENTITY, TYPE>((List<ENTITY>) entities.clone(), formQueries(), eventListener).search();
+            new SearchEngine<>((List<ENTITY>) entities.clone(), formQueries(), eventListener).search();
         });
         add(searchBtn);
     }
