@@ -3,10 +3,8 @@ package com.lifedrained.prepjournal.repo;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 import jakarta.persistence.Table;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;

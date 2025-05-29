@@ -15,19 +15,19 @@ public class DateUtils {
     public static final String DB_DT_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final String DB_DATE_FORMAT = "yyyy-MM-dd";
 
-    private static final String LD_FORMAT = "dd.MM.yyyy";
-    private static final String LDT_FORMAT = "dd.MM.yyyy HH:mm";
+    private static final String LD_FORMAT = "dd-MM-yyyy";
+    private static final String LDT_FORMAT = "dd-MM-yyyy HH:mm";
     private static final String LT_FORMAT = "HH:mm";
 
     public static String getStringFromDateTime(Date date){
-        return new SimpleDateFormat("dd.MM.yyyy HH:mm").format(date);
+        return new SimpleDateFormat(LDT_FORMAT).format(date);
     }
     public static String getStringFromDate(Date date){
         return new SimpleDateFormat("dd.MM.yyyy").format(date);
     }
     public static Date getDateFromString(String stringDate){
         try {
-            return new SimpleDateFormat("dd.MM.yyyy").parse(stringDate);
+            return new SimpleDateFormat(LD_FORMAT).parse(stringDate);
         }catch (ParseException ex){
             log.error("Error during parsing date  ", ex);
             return new Date();

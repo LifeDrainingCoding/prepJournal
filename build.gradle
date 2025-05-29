@@ -36,12 +36,18 @@ ext {
 }
 
 dependencies {
-    // https://mvnrepository.com/artifact/org.apache.poi/poi
     implementation 'org.apache.poi:poi:5.4.1'
     implementation 'io.github.natanimn:telebof:0.3.0'
-    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation 'org.apache.commons:commons-collections4:4.5.0-M2'
     implementation 'com.google.code.gson:gson:2.11.0'
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'com.opencsv:opencsv:5.9'
+    implementation 'org.apache.derby:derby:10.17.1.0'
+    implementation 'org.apache.poi:poi-ooxml:5.4.1'
+    implementation 'org.hibernate.orm:hibernate-core:6.6.0.Final'
+    implementation 'org.apache.commons:commons-lang3:3.17.0'
+    implementation 'org.apache.derby:derbytools:10.17.1.0'
+
+
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -52,20 +58,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     // https://mvnrepository.com/artifact/com.vaadin/vaadin
     implementation 'com.vaadin:vaadin-spring-boot-starter'
-    implementation 'org.springframework.integration:spring-integration-amqp'
     implementation 'org.springframework.integration:spring-integration-http'
     implementation 'org.springframework.integration:spring-integration-jdbc'
     implementation 'org.springframework.integration:spring-integration-jpa'
     // https://mvnrepository.com/artifact/com.opencsv/opencsv
-    implementation 'com.opencsv:opencsv:5.9'
-    implementation 'org.apache.derby:derby:10.17.1.0'
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-    implementation 'org.apache.commons:commons-lang3:3.17.0'
-    implementation 'org.springframework.integration:spring-integration-mail'
-    implementation 'org.apache.poi:poi-ooxml:5.4.1'
     // https://mvnrepository.com/artifact/org.springframework.security/spring-security-core
-    implementation fileTree('/libs')
-    implementation 'org.hibernate.orm:hibernate-core:6.6.0.Final'
     implementation 'org.springframework.shell:spring-shell-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -74,10 +72,8 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // https://mvnrepository.com/artifact/org.apache.derby/derbytools
-    implementation 'org.apache.derby:derbytools:10.17.1.0'
     runtimeOnly 'org.apache.derby:derby'
     // https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
-    implementation 'org.apache.commons:commons-collections4:4.5.0-M2'
 
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -104,10 +100,11 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 bootBuildImage {
-    imageName = 'com.lifedrained/prepjournal:latest'
+    imageName = 'drained/prepjournal:latest'
     environment = [
             'BP_JVM_VERSION' : '21',
-            'BP_APP_PORT' : '8080'
+            'BP_APP_PORT' : '8080',
+            'BP_JVM_TYPE' : 'jre'
     ]
 }
 

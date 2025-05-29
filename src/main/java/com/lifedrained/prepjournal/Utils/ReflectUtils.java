@@ -66,7 +66,6 @@ public class ReflectUtils {
 
     public static List<Object> formArgs(List<Field> fields , List<String> values) {
         List<Object> list = new ArrayList<>();
-        System.out.println("ldt " + values.get(3));
         for (int i = 0; i < fields.size(); i++) {
             String s = values.get(i);
             Field f = fields.get(i);

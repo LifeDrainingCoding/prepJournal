@@ -1,10 +1,8 @@
 package com.lifedrained.prepjournal.front.views.dialogs;
 
 import com.lifedrained.prepjournal.Utils.DateUtils;
-import com.lifedrained.prepjournal.Utils.Notify;
 import com.lifedrained.prepjournal.front.interfaces.OnConfirmDialogListener;
 import com.lifedrained.prepjournal.front.views.widgets.RowDatePicker;
-import com.lifedrained.prepjournal.front.views.widgets.RowWithIntField;
 import com.lifedrained.prepjournal.front.views.widgets.RowWithTxtField;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -22,8 +20,8 @@ public class ChangeGlobalVisitorDialog extends  BaseDialog<Object>{
     private final RowDatePicker birthDateField;
     private int age;
 
-
-    public ChangeGlobalVisitorDialog(OnConfirmDialogListener<Object> confirmListener, List<Object> fieldValues) {
+    public ChangeGlobalVisitorDialog(OnConfirmDialogListener<Object> confirmListener,
+                                     List<Object> fieldValues) {
         super(confirmListener, fieldValues);
 
         name = new RowWithTxtField((String) fieldValues.get(0));
@@ -35,14 +33,13 @@ public class ChangeGlobalVisitorDialog extends  BaseDialog<Object>{
         }else if (dateOrString instanceof String date) {
             birthDateField = new RowDatePicker(date, new Date());
         }else {
-            birthDateField = new RowDatePicker("ОШИБКА ПРИ ПОЛУЧЕНИИ ДАТЫ, СООБЩИТЕ АДМИНИСТРАЦИИ!",new Date());
+            birthDateField = new RowDatePicker(
+                    "ОШИБКА ПРИ ПОЛУЧЕНИИ ДАТЫ, СООБЩИТЕ АДМИНИСТРАЦИИ!",new Date());
         }
-
 
         linkedMasterName =  new RowWithTxtField((String) fieldValues.get(3) );
         speciality = new RowWithTxtField((String) fieldValues.get(4));
         group =  new RowWithTxtField((String) fieldValues.get(5));
-
 
         notes =  new RowWithTxtField((String) fieldValues.get(6));
 

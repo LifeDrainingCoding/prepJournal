@@ -96,7 +96,8 @@ public class SearchEngine<ENTITY extends BaseEntity,TYPE extends Enum<TYPE>> {
 
                 }
                 default ->
-                        throw new IncompatibleSearchTypeException("Unexpected searchType: " + searchQueries.get(0).getType());
+                        throw new IncompatibleSearchTypeException
+                                ("Unexpected searchType: " + searchQueries.get(0).getType());
             }
         }catch (IndexOutOfBoundsException ex){
             Notify.error("Хотя бы 1 поле должно быть заполнено для поиска");

@@ -2,7 +2,6 @@ package com.lifedrained.prepjournal.front.pages.admin.views;
 
 import com.lifedrained.prepjournal.Utils.DateUtils;
 import com.lifedrained.prepjournal.Utils.ExcelParser;
-import com.lifedrained.prepjournal.Utils.JSUtils;
 import com.lifedrained.prepjournal.Utils.Notify;
 import com.lifedrained.prepjournal.front.views.Refreshable;
 import com.lifedrained.prepjournal.front.i18n.CustomUploadI18N;
@@ -31,13 +30,14 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-
 public class VisitorImporter extends VerticalLayout implements Refreshable {
+
     private static final Logger log = LogManager.getLogger(VisitorImporter.class);
     private final MultiFileMemoryBuffer buffer;
     private final CustomUploadI18N upload;
     private final GlobalVisitorService service;
     private final GroupsRepo groupsRepo;
+
     public VisitorImporter(GlobalVisitorService service, GroupsRepo groupsRepo) {
         this.service = service;
         this.groupsRepo = groupsRepo;
@@ -49,11 +49,11 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
             log.info(event.getFileName());
             String fileName = event.getFileName();
 
-
             if (FilenameUtils.getExtension(fileName).equals("csv")) {
                 processFile(buffer.getInputStream(fileName));
             }else {
-                ExcelParser.parseExcel(buffer.getInputStream(fileName), ((lists, throwable) -> {
+                ExcelParser.parseExcel(buffer.getInputStream(fileName),
+                        ((lists, throwable) -> {
                     if (throwable != null) {
                             Notify.error("Ошибка при парсинге excel файла");
 
@@ -62,7 +62,6 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
                     importToDB(lists);
                 }));
             }
-
 
         });
         setAlignItems(Alignment.STRETCH);
@@ -82,7 +81,8 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
             rows.forEach(s -> {
                 if (!(s.length >= GlobalVisitor.PARAMS_LENGTH)) {
                     log.error("Ошибка при чтении строки. Пропуск строки. {} ", Arrays.deepToString(s));
-                    Notify.warning(String.format("Ошибка при чтении строки %d , она будет пропущена и не добавлена", rows.indexOf(s)));
+                    Notify.warning(String.format("Ошибка при чтении строки %d ," +
+                                    " она будет пропущена и не добавлена", rows.indexOf(s)));
                     return;
                 }
                 if (Arrays.stream(s).anyMatch(Objects::isNull)) {
@@ -90,7 +90,6 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
                 }
 
                 try {
-
 
                     String group = s[4];
                     Date birthDate = DateUtils.getDateFromString(s[1]);
@@ -107,7 +106,6 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
                     service.getRepo().save(visitor);
                 }catch (Exception ex){
                     log.warn(ex);
-                    return;
                 }
             });
 
@@ -115,10 +113,10 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
             Notify.success("Успешно сохранено");
 
         }  catch (IOException | CsvException e) {
-            Notify.error("Ошибка при импорте таблицы, проверьте корректность введенных данных либо поставьте разделитель ';' ");
+            Notify.error("Ошибка при импорте таблицы, проверьте корректность " +
+                    "введенных данных либо поставьте разделитель ';' ");
             log.error("Ошибка при импорте таблицы: ",e);
         }
-
 
     }
 
@@ -149,11 +147,8 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
             gv.setLinkedMasterName(masterName);
 
             addToGroup(group);
-
             visitors.add(gv);
         });
-
-
 
         service.getRepo().saveAll(visitors);
 

@@ -24,12 +24,7 @@ public class CustomTextEditor extends HorizontalLayout {
 
         Checkbox checkbox =  new Checkbox();
         checkbox.setLabel("Изменить");
-        checkbox.addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<Checkbox, Boolean>>() {
-            @Override
-            public void valueChanged(AbstractField.ComponentValueChangeEvent<Checkbox, Boolean> event) {
-               toggleTextArea();
-            }
-        });
+        checkbox.addValueChangeListener( event -> toggleTextArea());
         setAlignItems(Alignment.CENTER);
         addClassNames(LumoUtility.Border.BOTTOM, LumoUtility.Border.TOP);
         add(span,textArea,checkbox);

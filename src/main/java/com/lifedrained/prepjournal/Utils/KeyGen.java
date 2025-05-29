@@ -23,6 +23,7 @@ public class KeyGen {
         }catch (NoSuchAlgorithmException e){
             e.printStackTrace();
         }
+        assert generator != null;
         generator.init(256);
         SecretKey secretKey = generator.generateKey();
         String string = Base64.getEncoder().encodeToString(secretKey.getEncoded());

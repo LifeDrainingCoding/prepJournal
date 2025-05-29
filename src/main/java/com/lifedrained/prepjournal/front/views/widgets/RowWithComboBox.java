@@ -1,10 +1,8 @@
 package com.lifedrained.prepjournal.front.views.widgets;
 
-import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import java.util.List;
@@ -14,7 +12,9 @@ public class RowWithComboBox<T> extends HorizontalLayout {
     private final CustomLabel label;
     private final List<T> entities;
 
-    public RowWithComboBox(String text, List<T> entities, ItemLabelGenerator<T> itemLabelGenerator, ComboBox.ItemFilter<T> filter){
+    public RowWithComboBox(String text, List<T> entities,
+                           ItemLabelGenerator<T> itemLabelGenerator,
+                           ComboBox.ItemFilter<T> filter){
         super();
         this.entities = entities;
         cBox = new ComboBox<>();

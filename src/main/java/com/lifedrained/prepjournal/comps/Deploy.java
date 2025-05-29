@@ -40,7 +40,7 @@ public class Deploy {
     private SubsService subsService;
     private LinkedHashSet<SubsEntity> subs;
 
-    //ssh -R 80:localhost:8855 ssh.localhost.run
+    //ssh -R 80:localhost:8080 ssh.localhost.run
 
     private static final String key = "tunneled with tls termination,"
             , tokenPath = "static/API_Token" ;

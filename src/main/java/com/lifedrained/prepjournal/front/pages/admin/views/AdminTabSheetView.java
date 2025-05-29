@@ -15,7 +15,6 @@ import com.lifedrained.prepjournal.consts.StringConsts;
 import com.lifedrained.prepjournal.events.SearchEvent;
 import com.lifedrained.prepjournal.front.interfaces.CRUDControl;
 import com.lifedrained.prepjournal.data.searchengine.OnSearchEventListener;
-import com.lifedrained.prepjournal.front.interfaces.OnCheckedListener;
 import com.lifedrained.prepjournal.front.views.ControlButtons;
 import com.lifedrained.prepjournal.front.views.SearchView;
 import com.lifedrained.prepjournal.front.views.widgets.CustomGrid;
@@ -28,7 +27,6 @@ import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 import com.lifedrained.prepjournal.services.GlobalVisitorService;
 import com.lifedrained.prepjournal.services.SchedulesService;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.H1;
@@ -37,13 +35,10 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabSheet;
-import com.vaadin.flow.data.provider.AbstractListDataView;
-import com.vaadin.flow.data.provider.ListDataView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 import static com.lifedrained.prepjournal.consts.Ids.tabIds.*;
 
@@ -72,7 +67,6 @@ public class AdminTabSheetView extends TabSheet implements
     private final List<Object> eventServices;
     private final List<HashMap<String,? extends BaseEntity>> maps;
 
-    private GridListDataView<GlobalVisitor> visitorView;
     public AdminTabSheetView(LoginRepo repo, SchedulesService service,
                              GroupsRepo groupsRepo,
                              GlobalVisitorService globalVisitorService, CurrentSession session){
@@ -84,7 +78,6 @@ public class AdminTabSheetView extends TabSheet implements
         this.groupsRepo = groupsRepo;
         this.globalVisitorService = globalVisitorService;
         eventServices = List.of(repo,schedulesService,globalVisitorService,groupsRepo);
-
 
         setWidthFull();
         setHeightFull();
@@ -118,7 +111,8 @@ public class AdminTabSheetView extends TabSheet implements
         schedulesTab.setId(SCHEDULES_CONTENT);
 
         schedulesGrid = new CustomGrid<>(ScheduleEntity.class,
-                RenderLists.SCHEDULES_RENDERS, (id, entity, isChecked, viewId) ->
+                RenderLists.SCHEDULES_RENDERS,
+                (id, entity, isChecked, viewId) ->
                 new OnCheckedEntityHandler<>(id, entity, isChecked, selectedSchedules, schedulesBar),
                 Ids.SCHEDULES_BAR);
 
@@ -161,16 +155,14 @@ public class AdminTabSheetView extends TabSheet implements
         visitorsContent = new VerticalLayout(new H1("Список обучающихся"));
 
         visitorGrid =  new CustomGrid<>(GlobalVisitor.class,
-                RenderLists.GLOBAL_VISITORS_RENDER, (id, entity, isChecked, viewId) ->
+                RenderLists.GLOBAL_VISITORS_RENDER,
+                (id, entity, isChecked, viewId) ->
                 new OnCheckedEntityHandler<>(id, entity, isChecked, selectedVisitors, visitorBar),
                 Ids.VISITORS_BAR);
 
         visitorTab.setId(VISITORS_CONTENT);
 
-
-
         ArrayList<GlobalVisitor> globalVisitors = (ArrayList<GlobalVisitor>) globalVisitorService.getRepo().findAll();
-        visitorView = visitorGrid.setItems(globalVisitors);
         visitorsContent.add(visitorGrid);
 
         visitorsContent.addComponentAtIndex(1, new SearchView<>(this,
@@ -188,40 +180,33 @@ public class AdminTabSheetView extends TabSheet implements
         addSelectedChangeListener(this);
     }
 
-
-
     @Override
     public void onComponentEvent(AdminTabSheetView.SelectedChangeEvent event) {
-        event.getSelectedTab().getId().ifPresentOrElse(new Consumer<String>() {
-            @Override
-            public void accept(String string) {
+        event.getSelectedTab().getId().ifPresentOrElse(string -> {
 
-                if(string.equals(USERS_CONTENT)){
-                    usersContent.addComponentAtIndex(1, accountBar);
-                }else{
-                    selectedLogins.clear();
-                    usersContent.remove(accountBar);
-                }
+            if(string.equals(USERS_CONTENT)){
+                usersContent.addComponentAtIndex(1, accountBar);
+            }else{
+                selectedLogins.clear();
+                usersContent.remove(accountBar);
+            }
 
-                if (string.equals(SCHEDULES_CONTENT)){
-                    schedulesContent.addComponentAtIndex(1,schedulesBar);
-                }else{
-                    selectedSchedules.clear();
-                    schedulesContent.remove(schedulesBar);
-                }
+            if (string.equals(SCHEDULES_CONTENT)){
+                schedulesContent.addComponentAtIndex(1,schedulesBar);
+            }else{
+                selectedSchedules.clear();
+                schedulesContent.remove(schedulesBar);
+            }
 
-                if (string.equals(VISITORS_CONTENT)){
-                    visitorsContent.addComponentAtIndex(1, visitorBar);
-                } else {
-                    selectedVisitors.clear();
-                    visitorsContent.remove(visitorBar);
-                }
+            if (string.equals(VISITORS_CONTENT)){
+                visitorsContent.addComponentAtIndex(1, visitorBar);
+            } else {
+                selectedVisitors.clear();
+                visitorsContent.remove(visitorBar);
             }
         }, () -> Notification.show("Tab has no id"));
 
     }
-
-
 
     @Override
     public void onDelete(String id) {

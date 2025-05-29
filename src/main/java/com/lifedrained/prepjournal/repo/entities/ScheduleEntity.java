@@ -22,7 +22,6 @@ import java.util.Date;
 @Table(schema = "app", name = "schedules")
 @AllArgsConstructor
 public class ScheduleEntity extends BaseEntity  {
-    private static final Logger log = LogManager.getLogger(ScheduleEntity.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

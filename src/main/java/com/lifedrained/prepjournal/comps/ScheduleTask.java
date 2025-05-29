@@ -29,17 +29,14 @@ public class ScheduleTask {
     @Scheduled(fixedRate = pollRate)
     public void schedule(){
         List<ScheduleEntity> scheduleEntities = service.repo.findAll();
-        scheduleEntities.forEach(new Consumer<ScheduleEntity>() {
-            @Override
-            public void accept(ScheduleEntity entity) {
-                if(!entity.isExecuted()){
-                    long scheduleDate, now;
-                    scheduleDate = entity.getDate().getTime() + Duration.ofMinutes(entity.getDuration()).toMillis();
-                    now = System.currentTimeMillis();
-                    if(scheduleDate <= now){
-                        entity.setExecuted(true);
-                        service.repo.save(entity);
-                    }
+        scheduleEntities.forEach(entity -> {
+            if(!entity.isExecuted()){
+                long scheduleDate, now;
+                scheduleDate = entity.getDate().getTime() + Duration.ofMinutes(entity.getDuration()).toMillis();
+                now = System.currentTimeMillis();
+                if(scheduleDate <= now){
+                    entity.setExecuted(true);
+                    service.repo.save(entity);
                 }
             }
         });

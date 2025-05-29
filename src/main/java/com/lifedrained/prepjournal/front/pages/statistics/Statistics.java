@@ -39,7 +39,8 @@ public class Statistics extends VerticalLayout implements HasUrlParameter<String
     private SortStats stats;
     private String masterName;
 
-    public Statistics(SchedulesService schedulesService, LoginService loginService, GlobalVisitorService visitorService,
+    public Statistics(SchedulesService schedulesService, LoginService loginService,
+                      GlobalVisitorService visitorService,
                       CurrentSession session, ServiceUtils utils) {
         this.schedulesService = schedulesService;
         this.loginService = loginService;
@@ -73,21 +74,13 @@ public class Statistics extends VerticalLayout implements HasUrlParameter<String
     @Override
     public void setParameter(BeforeEvent beforeEvent, String s) {
       masterName = s;
-
       if (userCheck()){
-
           init();
       }else {
           Notify.error("У вас нет доступа к этой странице." , 60, Notification.Position.TOP_CENTER);
       }
     }
 
-
-    /**
-     находит все записи в бд по занятиям(проверяет наличие занятий у каждого препода),
-     потом формирует статистику для конкретного преподователя в определенный промежуток времени {@link SortTime},
-     а потом всю собранную статистику складывает в {@link List<SortTime>}
-     */
     @Override
     public List<StatItem> apply(SortTime sortTime) {
         List<StatItem> items = new ArrayList<>();
@@ -104,12 +97,6 @@ public class Statistics extends VerticalLayout implements HasUrlParameter<String
 
                 System.out.println(DateUtils.asDate(sortTime.getStartDate()));
 
-                /**
-                 * ВАЖНО: ЕСЛИ ТИП ДАННЫХ TIMESTAMP, ТО ИСКАТЬ В JPA СУГУБО ПО LocalDateTime, ИБО ЕСЛИ ИСКАТЬ ПО LocalDate
-                 * ТО ИНТЕПРЕТИРУЕТСЯ КАК ТИП ДАННЫХ DATE, А НЕ TIMESTAMP. ВПОСЛЕДСТВИИ JPA РЕПОЗИТОРИЙ ВЕРНЕТ ПУСТУЮ КОЛЛЕКЦИЮ.
-                 * БЕЗ ВСЯКИЙ ИСКЛЮЧЕНИЙ И ЛОГОВ.
-                 * ЭТО ПРОСТО НАХУЙ ВЫЕБЛО МНЕ НЕРВЫ, Я ОТДЕБАЖИЛ ВЕСЬКОД СВЯЗАННЫМ С ScheduleEntity НАХУЙ
-                 */
                 users.forEach(loginEntity -> {
                     items.add(new StatItem(loginEntity.getName(),
                             schedulesService.repo
