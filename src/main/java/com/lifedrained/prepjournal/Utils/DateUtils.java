@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class DateUtils {
@@ -15,8 +16,8 @@ public class DateUtils {
     public static final String DB_DT_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final String DB_DATE_FORMAT = "yyyy-MM-dd";
 
-    private static final String LD_FORMAT = "dd-MM-yyyy";
-    private static final String LDT_FORMAT = "dd-MM-yyyy HH:mm";
+    private static final String LD_FORMAT = "dd.MM.yyyy";
+    private static final String LDT_FORMAT = "dd.MM.yyyy HH:mm";
     private static final String LT_FORMAT = "HH:mm";
 
     public static String getStringFromDateTime(Date date){
@@ -83,5 +84,16 @@ public class DateUtils {
     }
     public static LocalTime getTimeFromString(String stringTime) throws DateTimeParseException {
         return LocalTime.parse(stringTime, DateTimeFormatter.ofPattern(LT_FORMAT));
+    }
+    public static int countWeeksBetween(LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("Start date must be before or equal to end date");
+        }
+
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+
+        long weeks = (daysBetween + 6) / 7;
+
+        return (int) weeks;
     }
 }

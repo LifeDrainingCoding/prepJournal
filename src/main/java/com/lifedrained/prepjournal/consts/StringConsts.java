@@ -14,11 +14,13 @@ public interface StringConsts {
     List<String> VisitorCRUDNames = List.of("Добавить посетителя",
             "Обновить выбранных посетителей",
             "Удалить выбранных посетителей");
+
+    List<String> GeneralCRUDNames = List.of("Добавить", "Обновить", "Удалить");
     List<Object> VisitorFieldNames = List.of("ФИО: ", "Дата рождения: ",
-            "Возраст: ", "ФИО Педагога: ",
-            "Направление: ","Группа: ",
-            "Примечания: "
+            "Дата зачисления: ", "Курс: ","Группа: ", "Паспорт: ",
+            "Номер приказа: ", "ИНН: ", "снилс: "
              );
+
 
     List<String> AccFieldNames = List.of(new String[]{
            "ФИО: ",

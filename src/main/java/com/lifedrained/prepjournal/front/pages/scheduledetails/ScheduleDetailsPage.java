@@ -4,7 +4,7 @@ import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.Utils.Notify;
 import com.lifedrained.prepjournal.consts.RoleConsts;
 import com.lifedrained.prepjournal.consts.Routes;
-import com.lifedrained.prepjournal.front.pages.scheduledetails.views.BackBtn;
+import com.lifedrained.prepjournal.front.views.widgets.BackBtn;
 import com.lifedrained.prepjournal.front.pages.scheduledetails.views.ScheduleTabSheetView;
 import com.lifedrained.prepjournal.repo.LoginRepo;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
@@ -38,7 +38,7 @@ public class ScheduleDetailsPage extends VerticalLayout implements HasUrlParamet
 
     private void init(){
         add(new BackBtn(session));
-        String masterName = schedule.getMasterName();
+        String masterName = schedule.getMaster().getName();
         if(!masterName.equals(session.getEntity().getName())) {
             if (!session.getEntity().getRole().equals(RoleConsts.ADMIN.value)) {
                 Notify.error("У вас нет прав для просмотра контента этой страницы. Покиньте страницу.", 15, Notification.Position.MIDDLE);
@@ -65,11 +65,6 @@ public class ScheduleDetailsPage extends VerticalLayout implements HasUrlParamet
                 schedule = entity;
                 init();
             }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                Notify.error("Не найдено занятие по UID: "+parameter);
-            }
-        });
+        }, () -> Notify.error("Не найдено занятие по UID: "+parameter));
     }
 }

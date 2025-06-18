@@ -16,9 +16,7 @@ import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 import com.lifedrained.prepjournal.services.SchedulesService;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabSheet;
@@ -46,6 +44,7 @@ public class MasterSchedules extends TabSheet implements OnCheckedListener<Sched
         scheduleBar = new ControlButtons<>(this, StringConsts.SchedulesCRUDNames){{
             setId(Ids.SCHEDULES_BAR);
         }};
+        scheduleBar.remove(scheduleBar.getCreate());
         initTabs();
 
     }
@@ -54,18 +53,15 @@ public class MasterSchedules extends TabSheet implements OnCheckedListener<Sched
         Tab mySchedules = new Tab("Мои занятия");
         VerticalLayout layoutSchedules = new VerticalLayout(){{
             setAlignItems(Alignment.STRETCH);
-            add(scheduleBar);
+//            add(scheduleBar);
         }};
-        List<ScheduleEntity> schedules = service.repo.findAllByMasterName(session.getEntity().getName());
+        List<ScheduleEntity> schedules = service.getRepo().findAllByMasterName(session.getEntity().getName());
         CustomGrid<ScheduleEntity , ComponentRenderer<Component, ScheduleEntity>> grid =
         new CustomGrid<>(ScheduleEntity.class, RenderLists.SCHEDULES_RENDERS,this, Ids.SCHEDULES_BAR);
         grid.setItems(schedules);
-        grid.addItemDoubleClickListener(new ComponentEventListener<ItemDoubleClickEvent<ScheduleEntity>>() {
-            @Override
-            public void onComponentEvent(ItemDoubleClickEvent<ScheduleEntity> event) {
-                JSUtils.openNewTab(Routes.SCHEDULE_DETAILS+"/"+event.getItem().getUid());
-            }
-        });
+        grid.removeColumn(grid.getColumns().getFirst());
+        grid.addItemDoubleClickListener( event ->
+                JSUtils.openNewTab(Routes.SCHEDULE_DETAILS + "/" + event.getItem().getUid()));
         layoutSchedules.add(grid);
         add(mySchedules, layoutSchedules);
     }
@@ -77,55 +73,53 @@ public class MasterSchedules extends TabSheet implements OnCheckedListener<Sched
 
     @Override
     public void onDelete(String id) {
-        service.getRepo().deleteAll(selectedSchedules.values());
-        selectedSchedules.clear();
-        refresh();
+//        service.getRepo().deleteAll(selectedSchedules.values());
+//        selectedSchedules.clear();
+//        refresh();
     }
 
     @Override
     public void onUpdate(String id) {
-        Iterator<ScheduleEntity> iterator = selectedSchedules.values().iterator();
-        final boolean[] switcher = {true};
-        while (iterator.hasNext()){
-            ScheduleEntity entity = iterator.next();
-            ChangeSchedulesDialog schedulesDialog = new ChangeSchedulesDialog(new OnConfirmDialogListener<Object>() {
-                @Override
-                public void onConfirm(List<Object> returnData) {
-                    entity.setScheduleName((String)returnData.get(0));
-                    entity.setMasterName( ((LoginEntity) returnData.get(1)).getName());
-                    entity.setDate((Date) returnData.get(2));
-                    entity.setDuration((int) returnData.get(3));
-                    entity.setTheme((String) returnData.get(4));
-                    entity.setMasterUid(session.getUid());
-                    service.getRepo().save(entity);
-                    switcher[0] = turnOffSwitcher(switcher[0]);
-                }
-            },List.of(entity.getScheduleName(), List.of(session.getEntity()),
-                    DateUtils.getStringFromDateTime(entity.getDate()),
-                    String.valueOf(entity.getDuration()),
-                    entity.getTheme()), session);
-            schedulesDialog.open();
-        }
+//        Iterator<ScheduleEntity> iterator = selectedSchedules.values().iterator();
+//        final boolean[] switcher = {true};
+//        while (iterator.hasNext()){
+//            ScheduleEntity entity = iterator.next();
+//            ChangeSchedulesDialog schedulesDialog = new ChangeSchedulesDialog(new OnConfirmDialogListener<Object>() {
+//                @Override
+//                public void onConfirm(List<Object> returnData) {
+//                    setParams(returnData, entity);
+//                    switcher[0] = turnOffSwitcher(switcher[0]);
+//                }
+//            },List.of(entity.getSubjectName(), List.of(session.getEntity()),
+//                    DateUtils.getStringFromDateTime(entity.getDate()),
+//                    String.valueOf(entity.getHours()),
+//                    entity.getTheme()), session);
+//            schedulesDialog.open();
+//        }
     }
 
     @Override
     public void onCreate(String id) {
-        ChangeSchedulesDialog scheludesDialog =  new ChangeSchedulesDialog(new OnConfirmDialogListener<Object>() {
-            @Override
-            public void onConfirm(List<Object> data) {
-                ScheduleEntity entity = new ScheduleEntity();
-                entity.setScheduleName((String) data.get(0));
-                entity.setMasterName(((LoginEntity) data.get(1)).getName());
-                entity.setDate((Date) data.get(2));
-                entity.setDuration(Integer.parseInt((String) data.get(3)));
-                entity.setTheme((String) data.get(4));
-                entity.setMasterUid(session.getUid());
-                service.getRepo().save(entity);
-                refresh();
-            }
-        }, StrConsts.getScheduleFieldValues(List.of(session.getEntity())), session);
-        scheludesDialog.open();
+//        ChangeSchedulesDialog scheludesDialog =  new ChangeSchedulesDialog(new OnConfirmDialogListener<Object>() {
+//            @Override
+//            public void onConfirm(List<Object> data) {
+//                ScheduleEntity entity = new ScheduleEntity();
+//                setParams(data, entity);
+//                refresh();
+//            }
+//        }, StrConsts.getScheduleFieldValues(List.of(session.getEntity())), session);
+//        scheludesDialog.open();
     }
+
+//    private void setParams(List<Object> data, ScheduleEntity entity) {
+//        entity.setSubjectName((String) data.get(0));
+//        entity.setMaster(((LoginEntity) data.get(1)));
+//        entity.setDate((Date) data.get(2));
+//        entity.setTheme((String) data.get(3));
+//        entity.setMaster(session.getEntity());
+//        service.getRepo().save(entity);
+//    }
+
     private void refresh(){
         UI.getCurrent().refreshCurrentRoute(true);
     }

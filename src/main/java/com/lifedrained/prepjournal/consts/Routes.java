@@ -6,4 +6,6 @@ public interface Routes {
     String MASTER_PAGE = "/master";
     String STATISTICS_PAGE = "/statistics";
     String LOGIN_PAGE = "/login";
+    String NOMENCLATURES_PAGE = "/nomenclatures";
+    String IE_PAGE = "/IE";
 }

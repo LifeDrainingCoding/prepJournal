@@ -1,5 +1,6 @@
 package com.lifedrained.prepjournal.comps;
 
+import com.lifedrained.prepjournal.consts.RoleConsts;
 import com.lifedrained.prepjournal.repo.LoginRepo;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.vaadin.flow.server.VaadinSession;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 public class CurrentSession {
     private static final Logger log = LogManager.getLogger(CurrentSession.class);
     private String uid, role;
+    private RoleConsts roleConst;
     private LoginEntity entity;
     public CurrentSession(LoginRepo repo){
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -23,6 +25,7 @@ public class CurrentSession {
             log.info("Session opened: "+login);
             entity = loginEntity;
             role = entity.getRole();
+            roleConst = RoleConsts.valueOf(role);
             uid = entity.getUid();
         }, () -> log.error("Cannot create session by login: "+login));
         VaadinSession.getCurrent().setAttribute(CurrentSession.class, this);

@@ -20,7 +20,9 @@ public class RowWithComboBox<T> extends HorizontalLayout {
         cBox = new ComboBox<>();
         cBox.setItems(filter,entities);
         cBox.setItemLabelGenerator(itemLabelGenerator);
-        cBox.setValue(entities.get(0));
+        if (!entities.isEmpty()){
+            cBox.setValue(entities.get(0));
+        }
         label = new CustomLabel(text);
         label.removeClassName(LumoUtility.Margin.Right.LARGE);
         label.addClassName(LumoUtility.Margin.Right.SMALL);

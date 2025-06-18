@@ -32,18 +32,34 @@ public class CustomGrid<T ,RENDER extends ComponentRenderer<Component,T>> extend
         addClassName(LumoUtility.Flex.AUTO);
 
     }
+    public CustomGrid(Class<T> clazz, OnCheckedListener<T> listener, List<PropertyRender<T,RENDER>> list){
+        super(clazz , false );
+        addColumn(new CheckBoxColumnRender<T>(listener, null)).setAutoWidth(true).setClassName(LumoUtility.Flex.AUTO);
+        list.forEach(propertyRender ->{
+            if(propertyRender.getRender() != null){
+                addColumn(propertyRender.getRender()).setHeader(propertyRender.getColumnName())
+                        .setAutoWidth(true);
+            }else {
+                addColumn(propertyRender.getPropetryName()).setHeader(propertyRender.getColumnName())
+                        .setAutoWidth(true);
+            }
+        });
+
+
+
+        setRowsDraggable(true);
+        addClassName(LumoUtility.Flex.AUTO);
+
+    }
     public CustomGrid(Class<T> clazz, List<PropertyRender<T,RENDER>> list){
         super(clazz , false );
-        list.forEach(new Consumer<PropertyRender<T,RENDER>>() {
-            @Override
-            public void accept(PropertyRender<T,RENDER> propertyRender) {
-                if(propertyRender.getRender() != null){
-                    addColumn((propertyRender.getRender())).setHeader(propertyRender.getColumnName())
-                            .setAutoWidth(true);
-                }else{
-                    addColumn(propertyRender.getPropetryName()).setHeader(propertyRender.getColumnName())
-                            .setAutoWidth(true);
-                }
+        list.forEach(propertyRender -> {
+            if(propertyRender.getRender() != null){
+                addColumn((propertyRender.getRender())).setHeader(propertyRender.getColumnName())
+                        .setAutoWidth(true);
+            }else{
+                addColumn(propertyRender.getPropetryName()).setHeader(propertyRender.getColumnName())
+                        .setAutoWidth(true);
             }
         });
 

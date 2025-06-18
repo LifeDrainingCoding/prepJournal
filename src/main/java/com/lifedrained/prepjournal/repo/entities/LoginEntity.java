@@ -2,13 +2,14 @@ package com.lifedrained.prepjournal.repo.entities;
 
 import com.lifedrained.prepjournal.Utils.KeyGen;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
-import java.util.Locale;
+import java.util.*;
 
 @Getter
 @Setter
@@ -27,13 +28,22 @@ public class LoginEntity extends BaseEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "ROLE")
+    @Column(name = "ROLE", nullable = false)
     private String role;
 
-    @Column(name = "name")
+    @Column(name = "name" , nullable = false)
     private String name;
 
-    @Column(name = "uid", nullable = false)
+    @OneToMany(mappedBy = "master",fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<ScheduleEntity> schedules = new HashSet<>();
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "master")
+    private GroupEntity group;
+
+    @OneToMany(mappedBy = "master",fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Set<SubjectEntity> subjects =  new HashSet<>();
+
+    @Column(name = "uid", nullable = false, unique = true)
     private String uid;
 
     public LoginEntity() {
@@ -54,4 +64,27 @@ public class LoginEntity extends BaseEntity {
         uid = KeyGen.generateKey();
     }
 
+    public void update(){
+        subjects.forEach(subject -> {
+            subject.setMaster(this);
+        });
+        schedules.forEach(schedule -> {
+            schedule.setMaster(this);
+        });
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(super.equals(obj)) return true;
+        if (obj instanceof LoginEntity loginEntity) {
+            return uid.equals(loginEntity.uid);
+        }
+        return false;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uid);
+    }
 }

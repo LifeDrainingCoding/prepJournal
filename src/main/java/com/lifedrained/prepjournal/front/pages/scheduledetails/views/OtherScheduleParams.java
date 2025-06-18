@@ -1,5 +1,6 @@
 package com.lifedrained.prepjournal.front.pages.scheduledetails.views;
 
+import com.lifedrained.prepjournal.Utils.ComponentSecurer;
 import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.Utils.DateUtils;
 import com.lifedrained.prepjournal.Utils.Notify;
@@ -16,7 +17,7 @@ import java.util.Date;
 
 import static com.lifedrained.prepjournal.consts.StrConsts.*;
 
-public class OtherScheduleParams extends VerticalLayout {
+public class OtherScheduleParams extends VerticalLayout implements ComponentSecurer {
     private SchedulesService service;
     private ScheduleEntity entity;
     private CurrentSession session;
@@ -32,33 +33,34 @@ public class OtherScheduleParams extends VerticalLayout {
         setAlignItems(Alignment.CENTER);
 
         if(session.getEntity().getRole().equals(RoleConsts.ADMIN.value)){
-            masterName = new RowWithComboBox<>("ФИО Препода",loginRepo.findAll(), LoginEntity::getName, EntityFilters.LOGIN.get());
-            masterName.getBody().setValue(loginRepo.findByUid(entity.getMasterUid()).get());
+            masterName = new RowWithComboBox<>("ФИО Преподавателя",loginRepo.findAllByRole(RoleConsts.USER_TIER1.value), LoginEntity::getName, EntityFilters.LOGIN.get());
+            masterName.getBody().setValue(loginRepo.findByUid(entity.getMaster().getUid()).get());
             add(masterName);
         }
         String duration = (String) getScheduleFieldValues(loginRepo.findAll()).get(3);
         Date date = entity.getDate();
 
         scheduleDuration = new RowWithIntField(duration);
-        scheduleDuration.setValue(entity.getDuration());
-        scheduleDuration.getBody().addValueChangeListener( event -> enableBtn());
+        scheduleDuration.setValue(entity.getHours());
+        scheduleDuration.setEnabled(false);
 
         dateTimePicker =  new CustomDateTimePicker();
         dateTimePicker.setValue(DateUtils.asLocalDateTime(date));
         dateTimePicker.addValueChangeListener(event -> enableBtn());
 
         saveChanges = new CustomButton("Сохранить изменения",  event -> {
-            entity.setDuration(scheduleDuration.getValue());
             entity.setDate(dateTimePicker.getDate());
             if(masterName != null){
-                entity.setMasterName(masterName.getCBoxValue().getName());
+                entity.setMaster(masterName.getCBoxValue());
             }
-            service.repo.save(entity);
+            service.getRepo().save(entity);
             Notify.success("Успешно сохранено");
             disableBtn();
         }){{
             setAlignSelf(Alignment.CENTER);
         }};
+
+        checkSecurity(2,scheduleDuration, dateTimePicker, saveChanges);
         add(scheduleDuration,dateTimePicker, saveChanges);
     }
     private void enableBtn(){

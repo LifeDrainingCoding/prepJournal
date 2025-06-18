@@ -92,14 +92,14 @@ public class Statistics extends VerticalLayout implements HasUrlParameter<String
             if (sortTime == null) {
 
                 users.forEach(loginEntity -> items.add(new StatItem(loginEntity.getName(),
-                        schedulesService.repo.findAllByMasterName(loginEntity.getName()))));
+                        schedulesService.getRepo().findAllByMasterName(loginEntity.getName()))));
             } else {
 
                 System.out.println(DateUtils.asDate(sortTime.getStartDate()));
 
                 users.forEach(loginEntity -> {
                     items.add(new StatItem(loginEntity.getName(),
-                            schedulesService.repo
+                            schedulesService.getRepo()
                                     .findAllByDateBetweenAndMasterName(DateUtils.asDate(sortTime.getStartDate()),
                                             DateUtils.asDate(LocalDateTime.now()),
                                             loginEntity.getName())));
@@ -110,11 +110,11 @@ public class Statistics extends VerticalLayout implements HasUrlParameter<String
         }else {
             if (sortTime == null) {
 
-                items.add(new StatItem(masterName, schedulesService.repo.findAllByMasterName(masterName)));
+                items.add(new StatItem(masterName, schedulesService.getRepo().findAllByMasterName(masterName)));
 
             }else {
 
-                items.add(new StatItem(masterName,schedulesService.repo
+                items.add(new StatItem(masterName,schedulesService.getRepo()
                         .findAllByDateBetweenAndMasterName(DateUtils.asDate(sortTime.getStartDate()),
                                 DateUtils.asDate(LocalDateTime.now()),
                                 masterName)));

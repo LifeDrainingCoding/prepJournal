@@ -28,7 +28,5 @@ public class CustomUploadI18N extends Upload {
         setI18n(uploadI18N);
         setReceiver(receiver);
     }
-    public CustomUploadI18N(){
 
-    }
 }

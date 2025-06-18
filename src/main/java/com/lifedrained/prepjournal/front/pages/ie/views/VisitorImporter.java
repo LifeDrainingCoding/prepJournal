@@ -1,4 +1,4 @@
-package com.lifedrained.prepjournal.front.pages.admin.views;
+package com.lifedrained.prepjournal.front.pages.ie.views;
 
 import com.lifedrained.prepjournal.Utils.DateUtils;
 import com.lifedrained.prepjournal.Utils.ExcelParser;
@@ -16,6 +16,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.enums.CSVReaderNullFieldIndicator;
 import com.opencsv.exceptions.CsvException;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import org.apache.commons.io.FilenameUtils;
@@ -60,7 +61,7 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
                         throw new RuntimeException(throwable);
                     }
                     importToDB(lists);
-                }));
+                }), true);
             }
 
         });
@@ -79,7 +80,7 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
             rows.removeFirst();
 
             rows.forEach(s -> {
-                if (!(s.length >= GlobalVisitor.PARAMS_LENGTH)) {
+                if (!(s.length == GlobalVisitor.PARAMS_LENGTH)) {
                     log.error("Ошибка при чтении строки. Пропуск строки. {} ", Arrays.deepToString(s));
                     Notify.warning(String.format("Ошибка при чтении строки %d ," +
                                     " она будет пропущена и не добавлена", rows.indexOf(s)));
@@ -91,19 +92,32 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
 
                 try {
 
-                    String group = s[4];
-                    Date birthDate = DateUtils.getDateFromString(s[1]);
-                    LocalDate localDate = DateUtils.asLocalDate(birthDate);
-                    int age = (int) ChronoUnit.YEARS.between(localDate, LocalDate.now());
+                    String name, birthDateS, courseS,groupName ,enrollDateS, enrollIdS, innIdS,
+                            passport, snils;
+                    name = s[0];
+                    birthDateS = s[1];
+                    courseS = s[2];
+                    groupName = s[3];
+                    enrollDateS = s[4];
+                    enrollIdS = s[5];
+                    innIdS = s[6];
+                    passport = s[7];
+                    snils = s[8];
 
-                    GlobalVisitor visitor = new GlobalVisitor(s[0],
-                            birthDate,
-                            age, s[2], s[3], group,
-                            s[5]);
+                    Date birthDate = DateUtils.getDateFromString(birthDateS);
+                    byte course = Byte.parseByte(courseS);
 
-                    addToGroup(group);
+                    GroupEntity group;
+                    Optional<GroupEntity> optGroup =  groupsRepo.findByName(groupName);
+                    if (checkForGroup(optGroup)){
+                        group = optGroup.get();
+                    }else {
+                        Notify.error("Группа "+groupName+" не существует");
+                        return;
+                    }
+                    GlobalVisitor gv = assingParams(name, enrollDateS, enrollIdS, innIdS, passport, snils, group, birthDate, course);
+                    service.saveDetached(gv);
 
-                    service.getRepo().save(visitor);
                 }catch (Exception ex){
                     log.warn(ex);
                 }
@@ -122,45 +136,82 @@ public class VisitorImporter extends VerticalLayout implements Refreshable {
 
     private void importToDB(List<List<String>> excelData){
         List<GlobalVisitor> visitors = new ArrayList<>();
+        log.info("excel data size: {}", excelData.size());
         excelData.removeFirst();
         excelData.forEach(row -> {
-            GlobalVisitor gv = new GlobalVisitor();
 
-            String name,birthDateS, masterName, speciality, group, notes;
+            try {
 
-            name = row.get(0);
-            birthDateS = row.get(1);
-            masterName = row.get(2);
-            speciality = row.get(3);
-            group = row.get(4);
-            notes = row.get(5);
 
-            LocalDate localDate = DateUtils.asLocalDate(DateUtils.getDateFromString(birthDateS));
-            int age = (int) ChronoUnit.YEARS.between(localDate, LocalDate.now());
+                String name, birthDateS, courseS, groupName, enrollDateS, enrollIdS, innIdS,
+                        passport, snils;
 
-            gv.setName(name);
-            gv.setBirthDate(DateUtils.asDate(localDate));
-            gv.setAge(age);
-            gv.setSpeciality(speciality);
-            gv.setGroup(group);
-            gv.setNotes(notes);
-            gv.setLinkedMasterName(masterName);
+                name = row.get(0);
+                birthDateS = row.get(1);
+                courseS = row.get(2);
+                groupName = row.get(3);
 
-            addToGroup(group);
-            visitors.add(gv);
+                GroupEntity group;
+                Optional<GroupEntity> optGroup = groupsRepo.findByName(groupName);
+                if (checkForGroup(optGroup)) {
+                    group = optGroup.get();
+                } else {
+                    log.error("не существует группа {}", groupName);
+                    Notify.error("Указана несуществующая группа с именем "+groupName);
+                    return;
+                }
+
+                enrollDateS = row.get(4);
+                enrollIdS = row.get(5);
+                innIdS = row.get(6);
+                passport = row.get(7);
+                snils = row.get(8);
+
+                Date birthDate = DateUtils.getDateFromString(birthDateS);
+                double courseD = Double.parseDouble(courseS);
+                byte course = (byte) courseD;
+
+                GlobalVisitor gv = assingParams(name, enrollDateS, enrollIdS, innIdS, passport, snils, group, birthDate, course);
+                visitors.add(gv);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Notify.error("Неверный формат табличных данных, проверьте формат данных");
+                return;
+            }
         });
 
-        service.getRepo().saveAll(visitors);
+        service.saveAll(visitors);
 
         refresh();
-        Notify.success("Успешно импортировано данные");
+        Notify.success("Успешно импортированы данные обучающихся");
     }
 
-    private void addToGroup(String group){
-        if (!groupsRepo.existsByGroup(group)) {
-            GroupEntity groupEntity = new GroupEntity();
-            groupEntity.setGroup(group);
-            groupsRepo.save(groupEntity);
+    private GlobalVisitor assingParams(String name, String enrollDateS, String enrollIdS, String innIdS, String passport, String snils, GroupEntity group, Date birthDate, byte course) {
+        Date enrollDate = DateUtils.getDateFromString(enrollDateS);
+
+        enrollIdS =  enrollIdS.replaceAll("\\D","");
+        innIdS = innIdS.replaceAll("\\D","");
+        long enrollId = Long.parseLong(enrollIdS);
+        long innId = Long.parseLong(innIdS);
+
+
+        LocalDate localDate = DateUtils.asLocalDate(birthDate);
+        int age = (int) ChronoUnit.YEARS.between(localDate, LocalDate.now());
+
+        GlobalVisitor gv = new GlobalVisitor(name,birthDate, age, course, group, enrollDate, enrollId, innId, passport, snils);
+        return gv;
+    }
+
+    private boolean checkForGroup( Optional<GroupEntity> optGroup){
+
+        if (optGroup.isPresent()) {
+           return true;
+        }else {
+            Notify.error("УКАЗАНА НЕСУЩЕСТВУЮЩАЯ ГРУППА! Строчка с несуществующей группой будет пропущена",
+                    10, Notification.Position.TOP_CENTER);
+            return false;
         }
     }
+
 }

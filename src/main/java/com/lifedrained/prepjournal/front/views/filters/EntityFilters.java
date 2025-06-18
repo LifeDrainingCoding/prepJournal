@@ -1,7 +1,9 @@
 package com.lifedrained.prepjournal.front.views.filters;
 
 public enum EntityFilters {
-    LOGIN(new LoginFilter());
+    SPECIALITY(new SpecialityFilter()), LOGIN(new LoginFilter()),GROUP(new GroupFilter())
+    ,SUBJECT(new SubjectFilter());
+
 
     private final AbstractEntityFilter<?> filter;
     <T> EntityFilters(AbstractEntityFilter<T> filter ){

@@ -63,13 +63,7 @@ public class ProcessorBarEvent {
                     case Ids.SCHEDULES_BAR -> {
                         ChangeSchedulesDialog scheludesDialog =  new ChangeSchedulesDialog(data -> {
                             ScheduleEntity entity = new ScheduleEntity();
-                            entity.setScheduleName((String) data.get(0));
-                            entity.setMasterName(((LoginEntity) data.get(1)).getName());
-                            entity.setDate((Date) data.get(2));
-                            entity.setDuration(Integer.parseInt((String) data.get(3)));
-                            entity.setTheme((String) data.get(4));
-                            entity.setMasterUid(((LoginEntity) data.get(1)).getUid());
-                            schedulesService.getRepo().save(entity);
+                            schedulesService.saveDialogSchedule(entity, data);
                             refresh();
                         }, StrConsts.getScheduleFieldValues(loginRepo.findAll()),session);
                         scheludesDialog.open();
@@ -78,20 +72,13 @@ public class ProcessorBarEvent {
 
                        ChangeGlobalVisitorDialog visitorDialog = new ChangeGlobalVisitorDialog(new OnConfirmDialogListener<Object>() {
                             @Override
-                            public void onConfirm(List<Object> returnData) {
-                                String group = (String) returnData.get(5);
+                            public void onConfirm(List<Object> returnData)  {
+                                GlobalVisitor visitor = new GlobalVisitor();
 
-                                GlobalVisitor visitor = new GlobalVisitor((String) returnData.get(0),
-                                        (Date) returnData.get(1), ((int) returnData.get(2)),
-                                        (String) returnData.get(3), (String) returnData.get(4),
-                                        group, (String) returnData.get(6));
-                                globalVisitorService.getRepo().save(visitor);
+                                globalVisitorService.saveDialog(visitor, returnData);
 
-                                if (!groupsRepo.existsByGroup(group)){
-                                    GroupEntity groupEntity = new GroupEntity();
-                                    groupEntity.setGroup(group);
-                                    groupsRepo.save(groupEntity);
-                                }
+
+
                                 refresh();
                             }
                         }, StringConsts.VisitorFieldNames);
@@ -130,18 +117,10 @@ public class ProcessorBarEvent {
                         while (iterator.hasNext()){
                             ScheduleEntity entity = iterator.next();
                             ChangeSchedulesDialog  schedulesDialog = new ChangeSchedulesDialog(returnData -> {
-                                entity.setScheduleName((String)returnData.get(0));
-                                entity.setMasterName(((LoginEntity) returnData.get(1)).getName());
-                                entity.setDate((Date) returnData.get(2));
-                                entity.setDuration(Integer.parseInt((String) returnData.get(3)));
-                                entity.setTheme((String) returnData.get(4));
-                                entity.setMasterUid(((LoginEntity) returnData.get(1)).getUid());
-                                schedulesService.getRepo().save(entity);
+                                schedulesService.saveDialogSchedule(entity, returnData);
                                 switcher[0] = turnOffSwitcher(switcher[0]);
-                            },List.of(entity.getScheduleName(), loginRepo.findAll(),
-                                    DateUtils.getStringFromDateTime(entity.getDate()),
-                                    String.valueOf(entity.getDuration()),
-                                  entity.getTheme()), session);
+                            },List.of(entity.getMaster().getName(), entity.getDate(),
+                                    entity.getTheme()), session);
                           schedulesDialog.open();
                         }
                     }
@@ -152,20 +131,7 @@ public class ProcessorBarEvent {
                             ChangeGlobalVisitorDialog visitorDialog =  new ChangeGlobalVisitorDialog(new OnConfirmDialogListener<Object>() {
                                 @Override
                                 public void onConfirm(List<Object> returnData) {
-                                    String group = (String) returnData.get(5);
-                                    globalVisitor.setName((String) returnData.get(0));
-                                    globalVisitor.setBirthDate((Date) returnData.get(1));
-                                    globalVisitor.setAge((int) returnData.get(2));
-                                    globalVisitor.setLinkedMasterName((String) returnData.get(3));
-                                    globalVisitor.setSpeciality((String) returnData.get(4));
-                                    globalVisitor.setGroup((group));
-                                    globalVisitor.setNotes((String)returnData.get(6));
-                                    globalVisitorService.getRepo().save(globalVisitor);
-                                    if (!groupsRepo.existsByGroup(group)){
-                                        GroupEntity groupEntity = new GroupEntity();
-                                        groupEntity.setGroup(group);
-                                        groupsRepo.save(groupEntity);
-                                    }
+                                    globalVisitorService.saveDialog(globalVisitor, returnData);
                                     switcher[0] = turnOffSwitcher(switcher[0]);
                                 }
                             }, StringConsts.VisitorFieldNames);
@@ -206,6 +172,9 @@ public class ProcessorBarEvent {
             }
         }
     }
+
+
+
     private void refresh(){
         UI.getCurrent().refreshCurrentRoute(true);
     }

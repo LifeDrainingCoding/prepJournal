@@ -3,7 +3,6 @@ package com.lifedrained.prepjournal.front.views;
 import com.lifedrained.prepjournal.front.interfaces.CRUDControl;
 import com.lifedrained.prepjournal.front.views.widgets.CustomButton;
 import com.lifedrained.prepjournal.repo.entities.BaseEntity;
-import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -27,12 +26,15 @@ public class ControlButtons<T extends BaseEntity> extends HorizontalLayout {
 
         setAlignItems(Alignment.CENTER);
 
+
+
         create = new CustomButton(names.get(0), new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> event) {
                 crudControl.onCreate(getId().get());
             }
         });
+
 
         update = new CustomButton(names.get(1), new ComponentEventListener<ClickEvent<Button>>() {
             @Override
@@ -55,7 +57,31 @@ public class ControlButtons<T extends BaseEntity> extends HorizontalLayout {
 
         add(create,update,delete);
     }
-    private void toggleButtons(boolean switcher){
+
+    public ControlButtons(CRUDListener<T> crudListener, List<String> names){
+        setWidthFull();
+
+        addClassNames(BorderColor.CONTRAST_20,Border.BOTTOM);
+
+        setAlignItems(Alignment.CENTER);
+
+
+
+        create = new CustomButton(names.get(0),  event -> crudListener.onCreate());
+
+
+        update = new CustomButton(names.get(1),  event -> crudListener.onUpdate());
+
+        delete = new CustomButton(names.get(2),  event -> crudListener.onDelete());
+
+        delete.setTheme(ButtonVariant.LUMO_ERROR);
+
+        update.setEnabled(false);
+        delete.setEnabled(false);
+
+        add(create,update,delete);
+    }
+    public void toggleButtons(boolean switcher){
         delete.setEnabled(switcher);
         update.setEnabled(switcher);
     }

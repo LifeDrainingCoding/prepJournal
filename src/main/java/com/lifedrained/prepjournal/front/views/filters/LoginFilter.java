@@ -6,9 +6,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 public class LoginFilter extends AbstractEntityFilter<LoginEntity>  {
 
     @Override
-    public  ComboBox.ItemFilter<LoginEntity> get(){
-        return (loginEntity, s) -> loginEntity.getName().toLowerCase().contains(s.toLowerCase());
+    public boolean test(LoginEntity loginEntity, String s) {
+        return loginEntity.getName().toLowerCase().contains(s.toLowerCase());
     }
-
-
 }

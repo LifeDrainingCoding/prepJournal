@@ -1,5 +1,12 @@
 package com.lifedrained.prepjournal.Utils;
 
+import com.lifedrained.prepjournal.repo.entities.BaseEntity;
+import com.lifedrained.prepjournal.repo.entities.SubjectEntity;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jsoup.Connection;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -9,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReflectUtils {
+    private static final Logger log = LogManager.getLogger(ReflectUtils.class);
+
     public static <T> Object parseArgument(Class<T> clazz , String value) {
         value = value.trim().replaceAll("[\r\n]", "");
         if (clazz == Boolean.class || clazz == boolean.class) {
@@ -81,5 +90,38 @@ public class ReflectUtils {
             return constructor.getParameterCount() <= 0;
         });
         return constructors.get(0);
+    }
+    public static String getEntityName(List<Field> fields, BaseEntity entity) throws IllegalAccessException {
+        fields.removeIf(field -> {
+            if (field.getName().toLowerCase().contains("name") || field.getName().toLowerCase().contains("subject") ) {
+
+                return false;
+            }
+            return true;
+
+        });
+
+
+
+        log.info("{} fields found", fields.size());
+
+        Field subjectField = IterableUtils.find(fields, field ->
+                field.getName().toLowerCase().contains("subject"));
+
+        if (subjectField != null) {
+            subjectField.setAccessible(true);
+
+            try {
+                return ((SubjectEntity) subjectField.get(entity)).getName();
+            }catch (ClassCastException e){
+                log.info("{} field wrongly associated with subject", subjectField.getName());
+            }
+        }
+
+        fields.get(0).setAccessible(true);
+        return (String) fields.get(0).get(entity);
+
+
+
     }
 }

@@ -1,24 +1,21 @@
 package com.lifedrained.prepjournal.Utils;
+import com.lifedrained.prepjournal.consts.RoleConsts;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import static com.lifedrained.prepjournal.consts.RoleConsts.*;
+import java.util.List;
 
 public class NameProcessor {
 
    private static final Logger log = LogManager.getLogger(NameProcessor.class);
 
    public static String convertRoleToReadable(String role) {
-      if(role.equals(ADMIN.value)|| role.equals(ADMIN1.value)){
-         return "Администратор";
-      }else if (role.equals(USER1.value)||role.equals(USER.value)){
-         return "Сотрудник";
-      }else if(role.equals("права")){
-         return "права";
+
+      List<RoleConsts> roles = List.of(RoleConsts.values());
+      for (RoleConsts roleConsts : roles) {
+         if (roleConsts.value.equals(role)) {
+            return roleConsts.translation;
+         }
       }
 
       throw new IllegalArgumentException("Entered role that doesn't exists: "+role);

@@ -1,20 +1,17 @@
 package com.lifedrained.prepjournal.front.pages.admin.views;
 
+import com.lifedrained.prepjournal.Utils.*;
+import com.lifedrained.prepjournal.comps.ContextProvider;
 import com.lifedrained.prepjournal.comps.CurrentSession;
-import com.lifedrained.prepjournal.Utils.JSUtils;
-import com.lifedrained.prepjournal.Utils.Notify;
-import com.lifedrained.prepjournal.Utils.OnCheckedEntityHandler;
-import com.lifedrained.prepjournal.Utils.ProcessorBarEvent;
-import com.lifedrained.prepjournal.consts.Routes;
+import com.lifedrained.prepjournal.consts.*;
 import com.lifedrained.prepjournal.data.searchengine.SearchTypes;
 import com.lifedrained.prepjournal.events.EventType;
-import com.lifedrained.prepjournal.consts.Ids;
 
-import com.lifedrained.prepjournal.consts.RenderLists;
-import com.lifedrained.prepjournal.consts.StringConsts;
 import com.lifedrained.prepjournal.events.SearchEvent;
 import com.lifedrained.prepjournal.front.interfaces.CRUDControl;
 import com.lifedrained.prepjournal.data.searchengine.OnSearchEventListener;
+import com.lifedrained.prepjournal.front.pages.ie.views.VisitorExporter;
+import com.lifedrained.prepjournal.front.pages.ie.views.VisitorImporter;
 import com.lifedrained.prepjournal.front.views.ControlButtons;
 import com.lifedrained.prepjournal.front.views.SearchView;
 import com.lifedrained.prepjournal.front.views.widgets.CustomGrid;
@@ -28,7 +25,7 @@ import com.lifedrained.prepjournal.services.GlobalVisitorService;
 import com.lifedrained.prepjournal.services.SchedulesService;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
-import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -43,7 +40,8 @@ import java.util.*;
 import static com.lifedrained.prepjournal.consts.Ids.tabIds.*;
 
 public class AdminTabSheetView extends TabSheet implements
-        ComponentEventListener<TabSheet.SelectedChangeEvent>, CRUDControl, OnSearchEventListener<GlobalVisitor>{
+        ComponentEventListener<TabSheet.SelectedChangeEvent>, CRUDControl, OnSearchEventListener<GlobalVisitor>
+            , ComponentSecurer{
 
     private static final Logger log = LogManager.getLogger(AdminTabSheetView.class);
     private final ControlButtons<LoginEntity> accountBar;
@@ -134,12 +132,25 @@ public class AdminTabSheetView extends TabSheet implements
         usersTab.setId(USERS_CONTENT);
         usersContent.setAlignItems(FlexComponent.Alignment.STRETCH);
 
+
+
+
         List<LoginEntity> entities = repo.findAll();
         CustomGrid<LoginEntity,?> entitiesGrid = new CustomGrid<>(LoginEntity.class, RenderLists.LOGIN_RENDERS,
                 (id, entity, isChecked, viewId) ->
                         new OnCheckedEntityHandler<>(id, entity, isChecked, selectedLogins, accountBar),
                 Ids.ACCOUNT_BAR);
 
+        if (!session.getRole().equals(RoleConsts.ADMIN.value)){
+            entities = entities.stream().filter(loginEntity->{
+                RoleConsts role = RoleConsts.valueOf(loginEntity.getRole());
+                RoleConsts sessionRole = RoleConsts.valueOf(session.getRole());
+                if (sessionRole.ordinal()> role.ordinal()){
+                    return true;
+                }
+                return false;
+            }).toList();
+        }
         entitiesGrid.setItems(entities);
 
         GridContextMenu<LoginEntity> entitiesMenu = entitiesGrid.addContextMenu();
@@ -159,6 +170,7 @@ public class AdminTabSheetView extends TabSheet implements
                 (id, entity, isChecked, viewId) ->
                 new OnCheckedEntityHandler<>(id, entity, isChecked, selectedVisitors, visitorBar),
                 Ids.VISITORS_BAR);
+        visitorGrid.setItems(globalVisitorService.getRepo().findAll());
 
         visitorTab.setId(VISITORS_CONTENT);
 
@@ -169,13 +181,14 @@ public class AdminTabSheetView extends TabSheet implements
                 SearchTypes.VISITOR_TYPE.values(), globalVisitors));
         add(visitorTab,visitorsContent );
 
-        Tab visitorImport = new Tab("Импорт обучающихся");
-        VisitorImporter importer = new VisitorImporter(globalVisitorService, groupsRepo);
-        add(visitorImport, importer);
 
-        Tab visitorExport = new Tab("Экспорт обучающихся");
-        VisitorExporter exporter = new VisitorExporter(globalVisitorService);
-        add(visitorExport, exporter);
+        Tab nomencTab = new Tab("Номенклатуры");
+        nomencTab.setId(RedirTabs.NOMENCLATURE.value);
+        add(nomencTab,new Div());
+
+        Tab ie = new Tab("Импорт/Экспорт данных");
+        ie.setId(RedirTabs.IE.value);
+        add(ie,new Div());
 
         addSelectedChangeListener(this);
     }
@@ -204,6 +217,17 @@ public class AdminTabSheetView extends TabSheet implements
                 selectedVisitors.clear();
                 visitorsContent.remove(visitorBar);
             }
+
+            List<RedirTabs> redirTabs = RedirTabs.all();
+            redirTabs.forEach(redirTab -> {
+                if (redirTab.value.equals(string)){
+                    JSUtils.openNewTab(redirTab.route);
+                }
+            });
+
+
+
+
         }, () -> Notification.show("Tab has no id"));
 
     }

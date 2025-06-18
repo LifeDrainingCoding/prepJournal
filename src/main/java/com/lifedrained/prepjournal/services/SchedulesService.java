@@ -1,28 +1,34 @@
 package com.lifedrained.prepjournal.services;
 
+import com.lifedrained.prepjournal.repo.LoginRepo;
 import com.lifedrained.prepjournal.repo.SchedulesRepo;
+import com.lifedrained.prepjournal.repo.SubjectRepo;
+import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.repo.entities.ScheduleEntity;
 
+import com.lifedrained.prepjournal.repo.entities.SubjectEntity;
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 
+import java.util.Date;
 import java.util.List;
 
 
 @Service
-@Getter
+@AllArgsConstructor
 public class SchedulesService {
     private static final Logger log = LogManager.getLogger(SchedulesService.class);
-    public SchedulesRepo repo;
-    public SchedulesService (SchedulesRepo schedulesRepo){
-
-        this.repo = schedulesRepo;
-
-    }
+    @Getter
+    private SchedulesRepo repo;
+    private LoginRepo loginRepo;
+    private SubjectRepo subjectRepo;
 
 
 
@@ -40,6 +46,28 @@ public class SchedulesService {
 
         return null;
 
+    }
+    @Transactional
+    public void saveDialogSchedule(ScheduleEntity entity, List<Object> returnData){
+        SubjectEntity subjectEntity = subjectRepo.findById(((SubjectEntity) returnData.get(0)).getId()).get();
+        LoginEntity loginEntity = loginRepo.findById(((LoginEntity) returnData.get(1)).getId()).get();
+        entity.setSubject(subjectEntity);
+        entity.setMaster(loginEntity);
+        entity.setDate((Date) returnData.get(2));
+        entity.setTheme((String) returnData.get(3));
+        repo.save(entity);
+    }
+
+    @Transactional
+    public SubjectEntity getSubjectSchedule(ScheduleEntity entity){
+        Hibernate.initialize(entity.getSubject());
+        return entity.getSubject();
+    }
+
+    @Transactional
+    public LoginEntity getLoginSchedule(ScheduleEntity entity){
+        Hibernate.initialize(entity.getMaster());
+        return entity.getMaster();
     }
 
 

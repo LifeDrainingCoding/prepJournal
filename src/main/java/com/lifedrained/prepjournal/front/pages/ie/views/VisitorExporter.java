@@ -1,4 +1,4 @@
-package com.lifedrained.prepjournal.front.pages.admin.views;
+package com.lifedrained.prepjournal.front.pages.ie.views;
 
 import com.lifedrained.prepjournal.Utils.ExcelParser;
 import com.lifedrained.prepjournal.Utils.Notify;
@@ -40,9 +40,12 @@ public class VisitorExporter extends VerticalLayout
         Notify.info("Найдено "+event.getSearchResult().size()+" результатов");
         visitors = event.getSearchResult();
 
+        if (link != null) {
+            remove(link);
+        }
+
         link = ExcelParser.exportExcel(visitors);
 
-        remove(link);
         add(link);
 
     }

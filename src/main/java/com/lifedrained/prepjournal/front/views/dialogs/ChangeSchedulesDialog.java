@@ -1,5 +1,6 @@
 package com.lifedrained.prepjournal.front.views.dialogs;
 
+import com.lifedrained.prepjournal.comps.ContextProvider;
 import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.Utils.DateUtils;
 import com.lifedrained.prepjournal.Utils.Notify;
@@ -9,11 +10,16 @@ import com.lifedrained.prepjournal.front.interfaces.OnConfirmDialogListener;
 import com.lifedrained.prepjournal.front.views.widgets.RowDateTimePicker;
 import com.lifedrained.prepjournal.front.views.widgets.RowWithComboBox;
 import com.lifedrained.prepjournal.front.views.widgets.RowWithTxtField;
+import com.lifedrained.prepjournal.repo.LoginRepo;
+import com.lifedrained.prepjournal.repo.SubjectRepo;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
+import com.lifedrained.prepjournal.repo.entities.SubjectEntity;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,9 +27,14 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class ChangeSchedulesDialog extends BaseDialog<Object> {
-    private RowWithTxtField scheduleName,  duration, theme ;
-    private RowWithComboBox<LoginEntity> masterName;
+    private static final Logger log = LogManager.getLogger(ChangeSchedulesDialog.class);
+    private RowWithTxtField    theme, master ;
+    private RowWithComboBox<SubjectEntity> subject;
+
     private RowDateTimePicker datePicker;
+
+    private final SubjectRepo subjectRepo;
+    private final LoginRepo loginRepo;
 
     private final CurrentSession session;
 
@@ -31,35 +42,44 @@ public class ChangeSchedulesDialog extends BaseDialog<Object> {
                                   List<Object> fieldValues, CurrentSession session){
         super(confirmDialogListener, fieldValues);
 
+        subjectRepo = ContextProvider.getBean(SubjectRepo.class);
+        loginRepo = ContextProvider.getBean(LoginRepo.class);
+
+
         this.session = session;
 
-        scheduleName =  new RowWithTxtField(((String) fieldValues.get(0))){{
-            setLabelWidth("200px");
-        }};
-        masterName =  new RowWithComboBox<>("Выберите преподавателя", ((List<LoginEntity>) fieldValues.get(1)),
-                LoginEntity::getName, EntityFilters.LOGIN.get()){{
-            setLabelWidth("200px");
-        }};
+        subject = new RowWithComboBox<>("Выберите дисциплину", subjectRepo.findAll(),
+                SubjectEntity::getName, EntityFilters.SUBJECT.get());
+        subject.getBody().addValueChangeListener(e -> {
+            master.getBody().setValue(e.getValue().getMaster().getName());
+            log.info("changed master: {}", master.getBody().getValue());
+        });
+
+
+
+
+
+        master =  new RowWithTxtField(((String) fieldValues.get(0)));
+        master.getBody().setReadOnly(true);
+        if (subject.getCBoxValue() != null){
+            master.getBody().setValue(subject.getCBoxValue().getMaster().getName());
+        }
+
+
+
         datePicker = new RowDateTimePicker("Измените дату если нужно: ");
-        if(fieldValues.get(2) instanceof String){
+        if(fieldValues.get(1) instanceof String){
             datePicker.getDateTimePicker().setValue(DateUtils.asLocalDateTime(new Date()));
-        }else if(fieldValues.get(2) instanceof Date){
-            Date date = (((Date) fieldValues.get(2)));
+        }else if(fieldValues.get(1) instanceof Date date){
             datePicker.getDateTimePicker().setValue(DateUtils.asLocalDateTime(date));
         }
 
-        duration = new RowWithTxtField(((String) ChangeSchedulesDialog.this.fieldValues.get(3))){{
-            getBody().setPattern("[0-9]*");
+
+        theme = new RowWithTxtField(((String) ChangeSchedulesDialog.this.fieldValues.get(2))){{
             setLabelWidth("200px");
         }};
-        theme = new RowWithTxtField(((String) ChangeSchedulesDialog.this.fieldValues.get(4))){{
-            setLabelWidth("200px");
-        }};
-        if (session.getRole().equals(RoleConsts.ADMIN.value)){
-            getHeader().add(new VerticalLayout(scheduleName,masterName,datePicker,duration,theme));
-        }else {
-            getHeader().add(new VerticalLayout(scheduleName,datePicker,duration,theme));
-        }
+            getHeader().add(new VerticalLayout(subject,master,datePicker,theme));
+
     }
 
     @Override
@@ -83,26 +103,16 @@ public class ChangeSchedulesDialog extends BaseDialog<Object> {
     public List<Object> getDataFromFields() {
         if(datePicker.getDateTimePicker().getValue() == null){
             return new ArrayList<>(){{
-                add(scheduleName.getFieldText());
-                if (session.getRole().equals(RoleConsts.ADMIN.value)){
-                    add(masterName.getCBoxValue());
-                }else {
-                    add(session.getEntity());
-                }
+                add(subject.getCBoxValue());
+                add(subject.getCBoxValue().getMaster());
                 add("null");
-                add(duration.getFieldText());
                 add(theme.getFieldText());
             }};
         }
         return new ArrayList<>(){{
-            add(scheduleName.getFieldText());
-            if (session.getRole().equals(RoleConsts.ADMIN.value)){
-                add(masterName.getCBoxValue());
-            }else {
-                add(session.getEntity());
-            }
+            add(subject.getCBoxValue());
+            add(subject.getCBoxValue().getMaster());
             add(DateUtils.asDate(datePicker.getDateTimePicker().getValue()));
-            add(duration.getFieldText());
             add(theme.getFieldText());
         }};
     }

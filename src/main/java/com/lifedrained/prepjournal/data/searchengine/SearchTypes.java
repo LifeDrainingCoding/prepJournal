@@ -23,30 +23,22 @@ public interface SearchTypes {
    }
 
    enum VISITOR_TYPE{
-       BY_NAME(1), BY_DATE(2), BY_AGE(3), BY_MASTER_NAME(4),
-       BY_SPECIALITY(5), BY_GROUP(6), BY_NOTES(7);
+       BY_NAME("По имени:"), BY_BIRTH_DATE("По дате рождения:"), BY_AGE("По возрасту:"),
+       BY_ENROLL("По номеру приказа"),
+       BY_GROUP("По группе:"), BY_PASSPORT("По паспорту:"),
+       BY_INN("По ИНН:"), BY_SNILS("По снилсу:"), BY_LOCAL_ID("По локальному номеру:"),
+       BY_ENROLL_DATE("По дате зачисления:"), BY_COURSE("По номеру курса:");
 
-       public final int value;
-       public final String string;
+       public final String translation;
 
-       VISITOR_TYPE(int value){
-           this.value = value;
-           switch (value){
-               case 1 -> string = "По имени:";
-               case 2 -> string = "По дате рождения:";
-               case 3 -> string = "По возрасту:";
-               case 4 -> string = "По Фамилии/Имени/Отчеству/ФИО Педагога:";
-               case 5 -> string = "По направлению:";
-               case 6 -> string = "По группе:";
-               case 7 -> string = "По примечанию:";
-               default -> string = null;
-           }
+       VISITOR_TYPE(String translation){
+           this.translation = translation;
        }
 
 
        @Override
        public String toString() {
-           return string;
+           return translation;
        }
    }
 

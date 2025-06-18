@@ -8,12 +8,8 @@ import com.lifedrained.prepjournal.repo.entities.GlobalVisitor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Consumer;
-
-import static com.lifedrained.prepjournal.data.searchengine.SearchTypes.VISITOR_TYPE.*;
 
 public class SearchEngine<ENTITY extends BaseEntity,TYPE extends Enum<TYPE>> {
     private static final Logger log = LogManager.getLogger(SearchEngine.class);
@@ -62,25 +58,40 @@ public class SearchEngine<ENTITY extends BaseEntity,TYPE extends Enum<TYPE>> {
 
                                 });
 
-                                case BY_DATE -> visitors.removeIf(visitor -> {
+                                case BY_BIRTH_DATE -> visitors.removeIf(visitor -> {
                                     String date = DateUtils.getStringFromDate(visitor.getBirthDate());
                                     return compareStrings(date, value);
                                 });
 
+                                case BY_ENROLL_DATE -> visitors.removeIf(visitor -> {
+                                 String date = DateUtils.getStringFromDate(visitor.getEnrollDate());
+                                 return compareStrings(date, value);
+                                });
+
+                                case BY_ENROLL -> visitors.removeIf(visitor ->
+                                        compareStrings(String.valueOf(visitor.getEnrollId()), value));
+
+                                case BY_SNILS -> visitors.removeIf(visitor ->
+                                        compareStrings(visitor.getSnils(), value));
+
+                                case BY_LOCAL_ID -> visitors.removeIf(visitor ->
+                                        compareStrings(String.valueOf(visitor.getLocalId()), value));
+
+                                case BY_PASSPORT -> visitors.removeIf(visitor ->
+                                        compareStrings(visitor.getPassport(), value));
+
                                 case BY_NAME -> visitors.removeIf(visitor ->
                                         compareStrings(visitor.getName(), value));
                                 case BY_GROUP -> visitors.removeIf(visitor ->
-                                        compareStrings(visitor.getGroup(), value));
+                                        compareStrings(visitor.getGroup().getName(), value));
+                                case BY_INN -> visitors.removeIf(visitor ->
+                                        compareStrings(String.valueOf(visitor.getInnId()),value));
 
-                                case BY_NOTES -> visitors.removeIf(visitor ->
-                                        compareStrings(visitor.getNotes(), value));
-
-                                case BY_SPECIALITY -> visitors.removeIf(visitor ->
-                                        compareStrings(visitor.getSpeciality(), value));
+                                case BY_COURSE -> visitors.removeIf(visitor ->
+                                        compareStrings(String.valueOf(visitor.getCourse()),value));
 
 
-                                case BY_MASTER_NAME -> visitors.removeIf(visitor ->
-                                        compareStrings(visitor.getLinkedMasterName(), value));
+
                                 default -> throw new IllegalStateException("Unexpected value: " + typeEnum);
                             }
                             log.info("searched visitors size {}", visitors.size());
@@ -92,9 +103,7 @@ public class SearchEngine<ENTITY extends BaseEntity,TYPE extends Enum<TYPE>> {
                     }
 
                 }
-                case SearchTypes.SCHEDULE_TYPE scheduleType -> {
 
-                }
                 default ->
                         throw new IncompatibleSearchTypeException
                                 ("Unexpected searchType: " + searchQueries.get(0).getType());
@@ -115,6 +124,10 @@ public class SearchEngine<ENTITY extends BaseEntity,TYPE extends Enum<TYPE>> {
         }else if(object instanceof Date d){
             String comparableDate = DateUtils.getStringFromDate(d);
             return !s1.contains(comparableDate);
+        }
+        if (object instanceof Integer || object instanceof Long || object instanceof Byte
+                || object instanceof Float || object instanceof Double){
+            return !s1.contains(String.valueOf(object));
         }
         return false;
     }

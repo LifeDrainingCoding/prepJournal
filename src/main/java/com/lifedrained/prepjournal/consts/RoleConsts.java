@@ -1,16 +1,14 @@
 package com.lifedrained.prepjournal.consts;
 
 public enum RoleConsts {
-      ADMIN ("ADMIN"),ADMIN1("ROLE_ADMIN") , USER1("ROLE_USER") , USER("USER");
+       USER_TIER1( "Преподаватель")
+    , USER_TIER2( "Секретарь"), USER_TIER3("Заведующий"),
+    ADMIN ( "Администратор");
       public final String value;
-      public String translation;
-     RoleConsts(String value){
-         this.value = value;
-         switch (value){
-             case "ADMIN","ROLE_ADMIN": translation = "Администратор"; break;
-             case "USER","ROLE_USER": translation = "Сотрудник";break;
-             default:
-         }
+      public final String translation;
+     RoleConsts( String translation) {
+         this.value = this.name();
+         this.translation = translation;
      }
 
 

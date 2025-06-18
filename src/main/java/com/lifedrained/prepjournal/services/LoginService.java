@@ -3,6 +3,7 @@ package com.lifedrained.prepjournal.services;
 import com.lifedrained.prepjournal.configs.LoginDetails;
 import com.lifedrained.prepjournal.repo.entities.LoginEntity;
 import com.lifedrained.prepjournal.repo.LoginRepo;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -53,6 +54,10 @@ public class LoginService implements UserDetailsService {
     public void updateUser( LoginEntity entity){
 
         repo.save(entity);
+    }
+    @Transactional
+    public void saveAll(Iterable<LoginEntity> entities){
+        repo.saveAll(entities);
     }
     public Optional<LoginEntity> findById(long id){
         return repo.findByIdOrderById(id);

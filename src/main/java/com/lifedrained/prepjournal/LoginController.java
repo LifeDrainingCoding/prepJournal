@@ -12,18 +12,13 @@ import org.springframework.stereotype.Controller;
 @AllArgsConstructor
 public class LoginController {
     @GetMapping("/welcome")
-    public String welcome(){
+    public String welcome() {
         return "Welcome page";
     }
+
     @GetMapping("/users")
     @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
-    public String users(){
+    public String users() {
         return "users page";
     }
-
-//    @GetMapping("/login")
-//    @PermitAll
-//    public String login(){
-//        return "forward:/login.html";
-//    }
 }

@@ -1,6 +1,8 @@
 package com.lifedrained.prepjournal.front.views.dialogs;
 
 import com.google.common.collect.Lists;
+import com.lifedrained.prepjournal.comps.ContextProvider;
+import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.consts.RoleConsts;
 import com.lifedrained.prepjournal.front.interfaces.OnConfirmDialogListener;
 import com.lifedrained.prepjournal.front.views.widgets.RowWithRoleComboBox;
@@ -11,6 +13,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,7 +27,15 @@ public class ChangeUserDialog extends BaseDialog<String> {
         name = new RowWithTxtField(fieldNames.get(0));
         login = new RowWithTxtField(fieldNames.get(1));
         password = new RowWithTxtField(fieldNames.get(2));
-        role =  new RowWithRoleComboBox(fieldNames.get(3), Lists.newArrayList(RoleConsts.ADMIN,RoleConsts.USER));
+
+        ArrayList<RoleConsts> roles = Lists.newArrayList(RoleConsts.values());
+        CurrentSession session = ContextProvider.getBean(CurrentSession.class);
+
+        if(session.getRoleConst() != RoleConsts.ADMIN){
+            roles.removeIf(roleConst -> roleConst.ordinal()>session.getRoleConst().ordinal());
+            roles.removeIf(roleConst -> roleConst.ordinal()==session.getRoleConst().ordinal());
+        }
+        role =  new RowWithRoleComboBox(fieldNames.get(3),roles );
 
 
         getHeader().add(new VerticalLayout(name, login, password, role));
@@ -50,12 +61,7 @@ public class ChangeUserDialog extends BaseDialog<String> {
             confirmListener.onConfirm(getDataFromFields());
 
         });
-        deny.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Button> event) {
-                close();
-            }
-        });
+        deny.addClickListener((ComponentEventListener<ClickEvent<Button>>) event -> close());
     }
 
 }

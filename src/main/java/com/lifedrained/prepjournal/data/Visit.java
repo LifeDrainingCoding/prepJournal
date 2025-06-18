@@ -24,5 +24,8 @@ public class Visit extends BaseEntity implements Serializable {
     @NonNull
     private Boolean isVisited;
 
+    @NotNull
     private long visitorId;
+    @Nullable
+    private Byte mark;
 }

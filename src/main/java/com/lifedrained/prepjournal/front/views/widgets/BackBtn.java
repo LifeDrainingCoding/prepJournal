@@ -1,4 +1,4 @@
-package com.lifedrained.prepjournal.front.pages.scheduledetails.views;
+package com.lifedrained.prepjournal.front.views.widgets;
 
 import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.consts.RoleConsts;
@@ -14,12 +14,13 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 public class BackBtn extends Button {
     public BackBtn(CurrentSession session){
         String redirectUrl;
-        if (session.getRole().equals(RoleConsts.ADMIN.value)){
-            redirectUrl = Routes.ADMIN_PAGE;
-            setText("Вернуться к странице администратора");
-        }else {
+        if (session.getRole().equals(RoleConsts.USER_TIER1.value)){
             redirectUrl = Routes.MASTER_PAGE;
             setText("Вернуться к странице педагога");
+
+        }else {
+            redirectUrl = Routes.ADMIN_PAGE;
+            setText("Вернуться к странице администратора");
         }
         addClassName(LumoUtility.AlignSelf.START);
         setIcon(VaadinIcon.ARROW_LEFT.create());

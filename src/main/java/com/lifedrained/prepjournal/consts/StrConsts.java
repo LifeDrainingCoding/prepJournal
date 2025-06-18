@@ -11,10 +11,10 @@ public class StrConsts {
 
     public static List<Object> getScheduleFieldValues(List<LoginEntity>  masters){
         List<Object> SchedulesFieldNames = List.of(
-                "Hазвание занятия: ",
+                "Преподаватель: ",
                 masters,
-                "Дата проведения занятия: ",
-                "Длительность занятия(Минуты): ",
+                "Тема занятия: ",
+                "Длительность занятия(академические часы): ",
                 "Тема занятия: ",
                 " "
         );

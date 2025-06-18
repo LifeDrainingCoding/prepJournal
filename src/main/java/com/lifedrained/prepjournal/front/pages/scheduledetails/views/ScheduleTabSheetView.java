@@ -1,4 +1,5 @@
 package com.lifedrained.prepjournal.front.pages.scheduledetails.views;
+import com.lifedrained.prepjournal.Utils.ComponentSecurer;
 import com.lifedrained.prepjournal.comps.CurrentSession;
 import com.lifedrained.prepjournal.Utils.Notify;
 import com.lifedrained.prepjournal.front.views.widgets.CustomTextEditor;
@@ -15,7 +16,8 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 
 
 
-public class ScheduleTabSheetView extends TabSheet implements ComponentEventListener<CompositionUpdateEvent> {
+public class ScheduleTabSheetView extends TabSheet implements ComponentEventListener<CompositionUpdateEvent> ,
+        ComponentSecurer {
     private final SchedulesService service;
     private ScheduleEntity entity;
     private final CurrentSession session;
@@ -23,7 +25,8 @@ public class ScheduleTabSheetView extends TabSheet implements ComponentEventList
     private final LoginRepo loginRepo;
 
     private Button saveDescriptionBtn;
-    public ScheduleTabSheetView(SchedulesService service, ScheduleEntity entity, CurrentSession session, GlobalVisitorService globalVisitorService
+    public ScheduleTabSheetView(SchedulesService service, ScheduleEntity entity, CurrentSession session,
+                                GlobalVisitorService globalVisitorService
                                 , LoginRepo loginRepo){
         this.loginRepo = loginRepo;
         this.globalVisitorService = globalVisitorService;
@@ -40,19 +43,17 @@ public class ScheduleTabSheetView extends TabSheet implements ComponentEventList
 
 
         Tab scheduleDescription = new Tab("Описание и тема занятия");
-        ScheduleNameView scheduleName = new ScheduleNameView(entity.getScheduleName(), "350px");
+        ScheduleNameView scheduleName = new ScheduleNameView(entity.getSubject().getName(), "350px", session);
         CustomTextEditor theme = new CustomTextEditor("Тема:", entity.getTheme());
         CustomTextEditor description = new CustomTextEditor("Описание:", entity.getDescription());
+        checkSecurity(2, scheduleName);
 
-        saveDescriptionBtn = new Button("Сохранить", new ComponentEventListener<ClickEvent<Button>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Button> event) {
-                entity.setTheme(theme.getValue());
-                entity.setDescription(description.getValue());
-                service.repo.save(entity);
-                Notify.success("Успешно сохранено");
-                toggleButton();
-            }
+        saveDescriptionBtn = new Button("Сохранить",  event -> {
+            entity.setTheme(theme.getValue());
+            entity.setDescription(description.getValue());
+            service.getRepo().save(entity);
+            Notify.success("Успешно сохранено");
+            toggleButton();
         });
 
         saveDescriptionBtn.setClassName(LumoUtility.AlignSelf.CENTER);
